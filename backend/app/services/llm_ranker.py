@@ -1,9 +1,9 @@
 import json
 import logging
 
+from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
-from openai import APIError, OpenAIError
 
 from app.core.config import settings
 from app.models.job import Job
@@ -59,12 +59,22 @@ def _jobs_payload(jobs: list[Job]) -> str:
     return json.dumps(payload, indent=2)
 
 
-def _structured_llm() -> ChatOpenAI:
-    if not settings.openai_api_key:
+def _structured_llm() -> BaseChatModel:
+    if not settings.has_llm_credentials():
         raise MatchRankingError(
-            "OPENAI_API_KEY is not configured. Add it to .env to run job matching.",
+            f"{settings.api_key_env_name} is not configured. Add it to .env to run job matching.",
             "missing_api_key",
         )
+
+    if settings.uses_gemini:
+        from langchain_google_genai import ChatGoogleGenerativeAI
+
+        return ChatGoogleGenerativeAI(
+            model=settings.gemini_llm_model,
+            google_api_key=settings.gemini_api_key,
+            temperature=0.2,
+        )
+
     return ChatOpenAI(
         model=settings.openai_llm_model,
         api_key=settings.openai_api_key,
@@ -118,7 +128,7 @@ async def rank_jobs_with_llm(parsed: ParsedResume, shortlist: list[Job]) -> Rank
                 matches=matches,
                 llm_total_tokens=_extract_llm_tokens(raw_message),
             )
-        except (OpenAIError, APIError, MatchRankingError, ValueError) as exc:
+        except Exception as exc:
             last_error = exc
             logger.warning("LLM ranking attempt %s failed: %s", attempt + 1, exc)
 

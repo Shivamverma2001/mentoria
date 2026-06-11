@@ -21,13 +21,13 @@ def match_results_key(resume_text: str) -> str:
 
 
 def resume_embedding_key(resume_text: str) -> str:
-    model = settings.openai_embedding_model
-    return f"arya:{CACHE_VERSION}:resume_emb:{model}:{hash_text(resume_text)}"
+    scope = settings.embedding_fingerprint
+    return f"arya:{CACHE_VERSION}:resume_emb:{scope}:{hash_text(resume_text)}"
 
 
 def job_embedding_key(job_id: str, content_hash: str) -> str:
-    model = settings.openai_embedding_model
-    return f"arya:{CACHE_VERSION}:job_emb:{model}:{job_id}:{content_hash}"
+    scope = settings.embedding_fingerprint
+    return f"arya:{CACHE_VERSION}:job_emb:{scope}:{job_id}:{content_hash}"
 
 
 async def cache_get_json(key: str) -> Any | None:

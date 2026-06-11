@@ -215,9 +215,9 @@ def verify_sse_incremental_mock() -> None:
 async def verify_live_pipeline() -> None:
     from app.core.config import settings  # noqa: E402
 
-    api_key = settings.openai_api_key.strip()
-    if not api_key or api_key.startswith("sk-your"):
-        print("SKIP live pipeline (set OPENAI_API_KEY in .env)")
+    if not settings.has_llm_credentials():
+        env_name = settings.api_key_env_name
+        print(f"SKIP live pipeline (set {env_name} in .env)")
         return
 
     from app.core.database import async_session_factory, engine  # noqa: E402

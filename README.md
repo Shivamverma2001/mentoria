@@ -78,13 +78,17 @@ cd frontend && npm install && npm run dev
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `OPENAI_API_KEY` | **Yes** (matching) | From [platform.openai.com](https://platform.openai.com/api-keys) |
+| `LLM_PROVIDER` | No | `openai` (default) or `gemini` |
+| `OPENAI_API_KEY` | **Yes** if `openai` | From [platform.openai.com](https://platform.openai.com/api-keys) |
+| `GEMINI_API_KEY` | **Yes** if `gemini` | Free key from [aistudio.google.com/apikey](https://aistudio.google.com/apikey) |
 | `DATABASE_URL` | Auto in Docker | Local: `postgresql+asyncpg://arya:arya@localhost:5432/arya_jobs` |
 | `REDIS_URL` | Auto in Docker | Local: `redis://localhost:6379/0` |
 | `SENTRY_DSN` | No | From [sentry.io](https://sentry.io) — free tier |
 | `SENTRY_ENVIRONMENT` | No | Default `development` |
 | `OPENAI_EMBEDDING_MODEL` | No | Default `text-embedding-3-small` |
 | `OPENAI_LLM_MODEL` | No | Default `gpt-4o-mini` |
+| `GEMINI_EMBEDDING_MODEL` | No | Default `gemini-embedding-001` (1536 dims) |
+| `GEMINI_LLM_MODEL` | No | Default `gemini-2.5-flash-lite` |
 | `BACKEND_CORS_ORIGINS` | No | Comma-separated frontend URLs |
 | `SHORTLIST_SIZE` | No | Default `12` |
 | `MATCH_CACHE_TTL_SECONDS` | No | Default `3600` |
@@ -92,6 +96,18 @@ cd frontend && npm install && npm run dev
 | `JOB_EMBEDDING_CACHE_TTL_SECONDS` | No | Default `604800` |
 
 Docker Compose overrides `DATABASE_URL` and `REDIS_URL` to use internal service hostnames.
+
+### Using Gemini instead of OpenAI
+
+If OpenAI quota is exhausted, switch providers in `.env`:
+
+```bash
+LLM_PROVIDER=gemini
+GEMINI_API_KEY=your-key-from-aistudio
+# OPENAI_API_KEY can be left empty
+```
+
+Restart: `docker compose down && docker compose up --build`. Job embeddings are cleared automatically when the provider changes.
 
 ---
 

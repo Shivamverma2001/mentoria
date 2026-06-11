@@ -16,6 +16,7 @@ from app.core.db_init import init_database
 from app.core.redis import close_redis, init_redis
 from app.core.sentry import init_sentry
 from app.schemas.errors import ErrorResponse
+from app.services.embedding_fingerprint import sync_embedding_fingerprint
 from app.services.llm_ranker import MatchRankingError
 from app.services.resume_errors import ResumeEmbeddingError, ResumeParseError
 logger = logging.getLogger(__name__)
@@ -31,6 +32,7 @@ async def lifespan(app: FastAPI):
     try:
         async with async_session_factory() as session:
             app.state.job_count = await init_database(session)
+            await sync_embedding_fingerprint(session)
         logger.info("Database initialized with %s jobs", app.state.job_count)
     except Exception as exc:
         logger.warning("Database init skipped (is Postgres running?): %s", exc)

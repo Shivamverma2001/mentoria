@@ -11,9 +11,15 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+asyncpg://arya:arya@localhost:5432/arya_jobs"
     redis_url: str = "redis://localhost:6379/0"
 
+    llm_provider: str = "openai"  # openai | gemini
+
     openai_api_key: str = ""
     openai_embedding_model: str = "text-embedding-3-small"
     openai_llm_model: str = "gpt-4o-mini"
+
+    gemini_api_key: str = ""
+    gemini_embedding_model: str = "gemini-embedding-001"
+    gemini_llm_model: str = "gemini-2.5-flash-lite"
 
     sentry_dsn: str = ""
     sentry_environment: str = "development"
@@ -28,6 +34,37 @@ class Settings(BaseSettings):
     @property
     def cors_origins(self) -> list[str]:
         return [origin.strip() for origin in self.backend_cors_origins.split(",") if origin.strip()]
+
+    @property
+    def uses_gemini(self) -> bool:
+        return self.llm_provider.strip().lower() == "gemini"
+
+    @property
+    def embedding_model_name(self) -> str:
+        if self.uses_gemini:
+            return self.gemini_embedding_model
+        return self.openai_embedding_model
+
+    @property
+    def llm_model_name(self) -> str:
+        if self.uses_gemini:
+            return self.gemini_llm_model
+        return self.openai_llm_model
+
+    @property
+    def embedding_fingerprint(self) -> str:
+        return f"{self.llm_provider.strip().lower()}:{self.embedding_model_name}"
+
+    @property
+    def api_key_env_name(self) -> str:
+        return "GEMINI_API_KEY" if self.uses_gemini else "OPENAI_API_KEY"
+
+    def has_llm_credentials(self) -> bool:
+        if self.uses_gemini:
+            key = self.gemini_api_key.strip()
+            return bool(key and not key.startswith("your-"))
+        key = self.openai_api_key.strip()
+        return bool(key and not key.startswith("sk-your"))
 
 
 settings = Settings()

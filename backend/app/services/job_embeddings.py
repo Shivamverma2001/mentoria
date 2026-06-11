@@ -1,6 +1,5 @@
 import logging
 
-from openai import APIError, AsyncOpenAI, OpenAIError
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,32 +8,10 @@ from app.core.database import engine
 from app.core.db_init import _ensure_vector_index
 from app.models.job import Job
 from app.services.cache import cache_get_json, cache_set_json, hash_text, job_embedding_key
-from app.services.embeddings import MAX_EMBED_CHARS
+from app.services.embeddings import embed_texts_batch
 from app.services.resume_errors import ResumeEmbeddingError
 
 logger = logging.getLogger(__name__)
-
-
-def _client() -> AsyncOpenAI:
-    if not settings.openai_api_key:
-        raise ResumeEmbeddingError(
-            "OPENAI_API_KEY is not configured. Add it to .env to generate embeddings.",
-            "missing_api_key",
-        )
-    return AsyncOpenAI(api_key=settings.openai_api_key)
-
-
-async def _fetch_embeddings_from_api(texts: list[str]) -> list[list[float]]:
-    trimmed = [text.strip()[:MAX_EMBED_CHARS] for text in texts]
-    try:
-        response = await _client().embeddings.create(
-            model=settings.openai_embedding_model,
-            input=trimmed,
-        )
-    except (OpenAIError, APIError) as exc:
-        raise ResumeEmbeddingError(f"Batch embedding failed: {exc}", "openai_error") from exc
-
-    return [item.embedding for item in sorted(response.data, key=lambda row: row.index)]
 
 
 async def _resolve_job_embeddings(jobs: list[Job]) -> list[list[float]]:
@@ -54,7 +31,7 @@ async def _resolve_job_embeddings(jobs: list[Job]) -> list[list[float]]:
         api_texts.append(text)
 
     if api_texts:
-        fetched = await _fetch_embeddings_from_api(api_texts)
+        fetched = await embed_texts_batch(api_texts)
         for job_index, embedding in zip(api_indices, fetched, strict=True):
             embeddings[job_index] = embedding
             job = jobs[job_index]
