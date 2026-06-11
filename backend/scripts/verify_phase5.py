@@ -117,8 +117,9 @@ def verify_health_reports_redis() -> None:
 
     client = TestClient(app)
     with (
-        patch("app.main.ping_redis", AsyncMock(return_value={"status": "connected", "pong": True})),
-        patch("app.main.redis_available", return_value=True),
+        patch("app.api.health.ping_redis", AsyncMock(return_value={"status": "connected", "pong": True})),
+        patch("app.api.health.redis_available", return_value=True),
+        patch("app.api.health.sentry_enabled", return_value=False),
     ):
         response = client.get("/api/health")
     body = response.json()

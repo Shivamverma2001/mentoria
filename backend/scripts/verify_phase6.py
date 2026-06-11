@@ -88,9 +88,9 @@ def verify_health_reports_sentry() -> None:
 
     client = TestClient(app)
     with (
-        patch("app.main.ping_redis", AsyncMock(return_value={"status": "disconnected"})),
-        patch("app.main.redis_available", return_value=False),
-        patch("app.main.sentry_enabled", return_value=True),
+        patch("app.api.health.ping_redis", AsyncMock(return_value={"status": "disconnected"})),
+        patch("app.api.health.redis_available", return_value=False),
+        patch("app.api.health.sentry_enabled", return_value=True),
     ):
         response = client.get("/api/health")
 

@@ -23,11 +23,15 @@ def _to_response(parsed) -> ResumeIngestResponse:
     )
 
 
-@router.post("/ingest", response_model=ResumeIngestResponse)
+@router.post(
+    "/ingest",
+    response_model=ResumeIngestResponse,
+    summary="Parse resume (form: paste or PDF)",
+)
 async def ingest_resume_form(
     resume_text: str | None = Form(default=None),
     resume_file: UploadFile | None = File(default=None),
-    embed: bool = Query(default=True),
+    embed: bool = Query(default=True, description="Generate OpenAI embedding"),
 ) -> ResumeIngestResponse:
     if resume_text is not None:
         resume_text = normalize_resume_text(resume_text) or None
@@ -36,7 +40,11 @@ async def ingest_resume_form(
     return _to_response(parsed)
 
 
-@router.post("/ingest/json", response_model=ResumeIngestResponse)
+@router.post(
+    "/ingest/json",
+    response_model=ResumeIngestResponse,
+    summary="Parse resume (JSON body)",
+)
 async def ingest_resume_json(body: ResumeIngestJsonBody) -> ResumeIngestResponse:
     parsed = await ingest_resume(resume_text=body.resume_text, resume_file=None, embed=body.embed)
     return _to_response(parsed)

@@ -182,14 +182,17 @@ Stop yourself if you drift here — time is better spent on architecture + strea
 
 ---
 
-## Phase 7 — Backend API Summary
+## Phase 7 — Backend API Summary ✅
 
-- [ ] `POST /api/match/stream` (preferred) or streaming variant — resume input + trigger match
-- [ ] Accept resume as `multipart/form-data` (PDF file) or JSON `{ "resume_text": "..." }`
-- [ ] `GET /api/jobs` (optional) — list jobs for debugging
-- [ ] `GET /api/health` — health check for Docker
-- [ ] CORS configured for local frontend
-- [ ] Request/response models documented (Pydantic schemas)
+- [x] `POST /api/match/stream` + `/stream/json` — SSE match stream
+- [x] Resume input: `multipart/form-data` (paste/PDF) or JSON `{ "resume_text": "..." }`
+- [x] `GET /api/jobs`, `/count`, `/{job_id}` — typed Pydantic responses
+- [x] `GET /api/health` — `HealthResponse` (DB, Redis, Sentry)
+- [x] `GET /api` — API index
+- [x] CORS for `http://localhost:5173` (`BACKEND_CORS_ORIGINS`)
+- [x] Pydantic schemas in `app/schemas/` + `docs/API.md` + `/docs`
+- [x] `ErrorResponse` on 400/502 errors
+- [x] `make verify-phase7`
 
 ---
 

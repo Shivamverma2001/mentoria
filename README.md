@@ -2,7 +2,7 @@
 
 Mentoria take-home assignment: match a candidate resume against job descriptions and stream the top 5 results with personalized reasoning.
 
-> **Status:** Phase 0–6 complete (matching, Redis, Sentry). Frontend UI and full Docker compose in progress.
+> **Status:** Phase 0–7 complete (full backend API). Frontend UI and Docker compose polish in progress.
 
 ## Quick start
 
@@ -29,7 +29,10 @@ make verify-phase3
 make verify-phase4
 make verify-phase5
 make verify-phase6
+make verify-phase7
 ```
+
+**API docs:** [docs/API.md](docs/API.md) · Interactive: http://localhost:8000/docs
 
 ## Observability (Sentry)
 

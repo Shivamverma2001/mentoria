@@ -1,16 +1,12 @@
 from fastapi import APIRouter, Depends, File, Form, UploadFile
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
+from app.schemas.match import MatchJsonBody
 from app.services.matcher import stream_job_match
 
 router = APIRouter(prefix="/api/match", tags=["match"])
-
-
-class MatchJsonBody(BaseModel):
-    resume_text: str = Field(min_length=1)
 
 
 def _stream_response(generator) -> StreamingResponse:
@@ -25,10 +21,24 @@ def _stream_response(generator) -> StreamingResponse:
     )
 
 
-@router.post("/stream")
+@router.post(
+    "/stream",
+    summary="Match resume to jobs (SSE stream)",
+    description=(
+        "Upload or paste a resume and receive top 5 job matches as Server-Sent Events. "
+        "Events: `status` (parsing/embedding/retrieving/ranking), `match` (JobMatch), "
+        "`done` (duration + cache_hit), `error`."
+    ),
+    responses={
+        200: {
+            "description": "SSE stream (`text/event-stream`)",
+            "content": {"text/event-stream": {"example": 'event: match\ndata: {"job_id":"job_005",...}\n\n'}},
+        }
+    },
+)
 async def match_jobs_stream(
-    resume_text: str | None = Form(default=None),
-    resume_file: UploadFile | None = File(default=None),
+    resume_text: str | None = Form(default=None, description="Pasted resume plain text"),
+    resume_file: UploadFile | None = File(default=None, description="Resume PDF upload"),
     db: AsyncSession = Depends(get_db),
 ) -> StreamingResponse:
     return _stream_response(
@@ -36,7 +46,11 @@ async def match_jobs_stream(
     )
 
 
-@router.post("/stream/json")
+@router.post(
+    "/stream/json",
+    summary="Match resume to jobs via JSON body (SSE stream)",
+    description="Same SSE stream as `/stream`, with `{\"resume_text\": \"...\"}` JSON body.",
+)
 async def match_jobs_stream_json(
     body: MatchJsonBody,
     db: AsyncSession = Depends(get_db),

@@ -3,6 +3,12 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 
+class MatchJsonBody(BaseModel):
+    """JSON body for POST /api/match/stream/json."""
+
+    resume_text: str = Field(min_length=1, description="Full resume plain text")
+
+
 class JobMatch(BaseModel):
     job_id: str
     title: str

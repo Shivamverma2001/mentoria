@@ -1,4 +1,4 @@
-.PHONY: db-up db-down db-seed redis-up backend-install verify-phase2 verify-phase3 verify-phase4 verify-phase5 verify-phase6
+.PHONY: db-up db-down db-seed redis-up backend-install verify-phase2 verify-phase3 verify-phase4 verify-phase5 verify-phase6 verify-phase7
 
 db-up:
 	docker compose up -d postgres redis
@@ -29,3 +29,6 @@ verify-phase5:
 
 verify-phase6:
 	backend/.venv/bin/python backend/scripts/verify_phase6.py
+
+verify-phase7:
+	backend/.venv/bin/python backend/scripts/verify_phase7.py
