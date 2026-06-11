@@ -89,21 +89,22 @@ Stop yourself if you drift here — time is better spent on architecture + strea
 
 ---
 
-## Phase 2 — Database & Data Layer
+## Phase 2 — Database & Data Layer ✅
 
-- [ ] Add PostgreSQL service to `docker-compose.yml`
-- [ ] Enable **pgvector** extension in Postgres image/init script
-- [ ] Set up **async SQLAlchemy** + async session factory
-- [ ] Confirm **all** DB reads/writes use async paths (no sync session leaks)
-- [ ] Define `Job` model mapping `jobs.json` fields:
-  - [ ] `id`, `title`, `company`, `location`, `remote`
-  - [ ] `experience_min_years`, `experience_max_years`
-  - [ ] `salary_range_inr_lpa`, `salary_range_usd` (nullable — not every job has both)
-  - [ ] `posted_date`, `skills_required` (JSON/array), `description`, `apply_url`
-  - [ ] `embedding` vector column (pgvector)
-- [ ] Write seed script/command to load all 25 jobs from `jobs.json` into Postgres
-- [ ] Run seed on startup or via `make seed` / documented CLI command
-- [ ] Verify jobs are queryable (count = 25)
+- [x] Add PostgreSQL service to `docker-compose.yml` (`pgvector/pgvector:pg16`)
+- [x] Enable **pgvector** extension in Postgres init script + runtime bootstrap
+- [x] Set up **async SQLAlchemy** + async session factory (`app/core/database.py`)
+- [x] Confirm **all** DB reads/writes use async paths (`get_db`, `AsyncSession` services)
+- [x] Define `Job` model mapping `jobs.json` fields:
+  - [x] `id`, `title`, `company`, `location`, `remote`
+  - [x] `experience_min_years`, `experience_max_years`
+  - [x] `salary_range_inr_lpa`, `salary_range_usd` (nullable)
+  - [x] `posted_date`, `skills_required` (ARRAY), `description`, `apply_url`
+  - [x] `embedding` vector column (1536 dims, nullable until Phase 4)
+- [x] Write seed script/command (`app/services/seed.py`, `python -m app.scripts.seed`, `make db-seed`)
+- [x] Run seed on startup when DB empty (`app/core/db_init.py` in lifespan)
+- [x] Verify jobs queryable — `GET /api/jobs`, `GET /api/jobs/count`, `make verify-phase2`
+- [x] Recreated venv with Python 3.11 (assignment requirement)
 
 ---
 

@@ -2,7 +2,7 @@
 
 Mentoria take-home assignment: match a candidate resume against job descriptions and stream the top 5 results with personalized reasoning.
 
-> **Status:** Phase 0–1 complete (planning + scaffold). Matching pipeline, DB, and UI wiring in progress.
+> **Status:** Phase 0–2 complete (planning, scaffold, database layer). Matching pipeline and UI wiring in progress.
 
 ## Quick start
 
@@ -10,16 +10,27 @@ Mentoria take-home assignment: match a candidate resume against job descriptions
 # 1. Copy env and add your OpenAI + Sentry keys
 cp .env.example .env
 
-# 2. Start stack (Phase 9 — docker-compose coming next)
-cd backend && pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
+# 2. Install backend (Python 3.11+)
+make backend-install
 
-# 3. Frontend (separate terminal)
+# 3. Start Postgres + pgvector and seed jobs
+make db-up          # requires Docker Desktop running
+make db-seed        # loads 25 jobs from backend/data/jobs.json
+
+# 4. Run API
+cd backend && .venv/bin/uvicorn app.main:app --reload --port 8000
+
+# 5. Frontend (separate terminal)
 cd frontend && npm install && npm run dev
+
+# Verify Phase 2
+make verify-phase2
 ```
 
 - Frontend: http://localhost:5173
 - Backend health: http://localhost:8000/api/health
+- Jobs list: http://localhost:8000/api/jobs
+- Job count: http://localhost:8000/api/jobs/count
 
 ## Project layout
 
