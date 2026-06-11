@@ -78,7 +78,7 @@ Hi,
 Please find my submission for the Arya Smart Job Matcher assignment:
 
 • Repository: https://github.com/Shivamverma2001/mentoria
-• Walkthrough video (6 min): [PASTE LOOM OR DRIVE LINK]
+• Walkthrough video: https://www.loom.com/share/9d9e965aa9bc46dcab9565eb4cd07b7a
 
 Quick start:
   git clone https://github.com/Shivamverma2001/mentoria.git
@@ -109,5 +109,5 @@ Best,
 - [x] LLM + LangChain/LangGraph documented in README
 - [x] `docker compose up` full stack
 - [x] README architecture + one-more-week + known issues
-- [ ] 5–8 min video recorded and linked
+- [x] 5–8 min video recorded and linked
 - [x] Code pushed to GitHub

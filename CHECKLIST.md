@@ -253,7 +253,7 @@ Stop yourself if you drift here — time is better spent on architecture + strea
 - [x] **If I had one more week** — 7 prioritized concrete items
 - [x] **Known issues & limitations** — honest table (LLM latency, no deploy, PDF, fallback matches, etc.)
 - [x] Review log: `docs/PHASE11_REVIEW.md`
-- [ ] Link to walkthrough video — **Phase 12** (placeholder in README)
+- [x] Link to walkthrough video — [Loom](https://www.loom.com/share/9d9e965aa9bc46dcab9565eb4cd07b7a)
 
 ---
 
@@ -263,8 +263,9 @@ Stop yourself if you drift here — time is better spent on architecture + strea
 - [x] Proud code pick: `backend/app/services/matcher.py` (`stream_job_match`)
 - [x] Rewrite pick: `backend/app/services/llm_ranker.py` (fallback padding)
 - [x] Demo talking points drafted (streaming + top-5 walkthrough)
-- [ ] **Record** Loom or Google Drive video (follow `docs/PHASE12_VIDEO_SCRIPT.md`)
-- [ ] Paste video link in README + submission email
+- [x] **Record** Loom walkthrough
+- [x] Paste video link in README
+- [ ] Send submission email with video link (`docs/SUBMISSION.md`)
 
 ---
 
@@ -275,7 +276,7 @@ Stop yourself if you drift here — time is better spent on architecture + strea
 - [x] Repo link public: https://github.com/Shivamverma2001/mentoria
 - [x] Security pass: `.env` gitignored, no keys in repo (`docs/SUBMISSION.md`)
 - [x] Submission guide + email template: `docs/SUBMISSION.md`
-- [ ] Paste **video link** in README (after Phase 12 recording)
+- [x] Paste **video link** in README
 - [x] Live stack tested with Docker + Gemini API key
 - [x] Gemini provider support committed (`LLM_PROVIDER=gemini`)
 - [ ] Send submission email to reviewer (template in `docs/SUBMISSION.md`)
@@ -321,10 +322,10 @@ Stop yourself if you drift here — time is better spent on architecture + strea
 | 8 | LLM provider justified in README; LangChain/LangGraph documented | ✅ |
 | 9 | `docker compose up` runs full stack locally | ✅ |
 | 10 | README: setup, architecture, one-more-week, known issues | ✅ |
-| 11 | **5–8 min** walkthrough video | ⏳ Record + link |
+| 11 | **5–8 min** walkthrough video | ✅ [Loom](https://www.loom.com/share/9d9e965aa9bc46dcab9565eb4cd07b7a) |
 | 12 | GitHub repo public | ✅ |
 
-**Remaining before submit:** record video → paste link in README → send email (`docs/SUBMISSION.md`).
+**Remaining before submit:** send submission email (`docs/SUBMISSION.md`).
 
 ---
 

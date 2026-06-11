@@ -2,8 +2,8 @@
 
 Mentoria take-home assignment: match a candidate resume against job descriptions and stream the top 5 results with personalized reasoning.
 
-> **Status:** Ready to submit — record video (5–8 min), paste link below, send [submission email](docs/SUBMISSION.md).  
-> **Live demo:** [https://mentoria-ui.onrender.com](https://mentoria-ui.onrender.com)
+> **Status:** Ready to submit — send [submission email](docs/SUBMISSION.md).  
+> **Live demo:** [https://mentoria-ui.onrender.com](https://mentoria-ui.onrender.com) · **Video:** [Loom walkthrough](https://www.loom.com/share/9d9e965aa9bc46dcab9565eb4cd07b7a)
 
 ---
 
@@ -25,8 +25,8 @@ docker compose up --build
 
 API docs: http://localhost:8000/docs · Health: http://localhost:3000/api/health
 
-**Walkthrough video:** _[Paste your Loom or Google Drive link here after recording]_  
-**Recording script:** [docs/PHASE12_VIDEO_SCRIPT.md](docs/PHASE12_VIDEO_SCRIPT.md) (demo, architecture, proud code, rewrite — ~6 min)
+**Walkthrough video:** [https://www.loom.com/share/9d9e965aa9bc46dcab9565eb4cd07b7a](https://www.loom.com/share/9d9e965aa9bc46dcab9565eb4cd07b7a)  
+**Recording script:** [docs/PHASE12_VIDEO_SCRIPT.md](docs/PHASE12_VIDEO_SCRIPT.md)
 
 ---
 
@@ -389,7 +389,7 @@ Production logging: `LOG_JSON=true` emits structured JSON logs (request ID, dura
 | **Repository** | https://github.com/Shivamverma2001/mentoria |
 | **Live demo** | https://mentoria-ui.onrender.com |
 | **API** | https://mentoria-api-sklw.onrender.com/docs |
-| **Walkthrough video** | _Add Loom/Drive URL above after recording_ |
+| **Walkthrough video** | https://www.loom.com/share/9d9e965aa9bc46dcab9565eb4cd07b7a |
 | **Submission checklist** | [docs/SUBMISSION.md](docs/SUBMISSION.md) |
 
 Email template and fresh-clone test steps are in `docs/SUBMISSION.md`.
