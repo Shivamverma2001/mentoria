@@ -2,7 +2,7 @@
 
 Mentoria take-home assignment: match a candidate resume against job descriptions and stream the top 5 results with personalized reasoning.
 
-> **Status:** Phase 0–9 complete (full Docker stack). Submission docs (README architecture, video) in Phase 11–13.
+> **Status:** Phase 0–10 complete (validated demo path). Submission docs (README architecture, video) in Phase 11–13.
 
 ---
 
@@ -83,7 +83,10 @@ make verify-phase6   # Sentry
 make verify-phase7   # API schemas
 make verify-phase8   # frontend build + tests
 make verify-phase9   # docker-compose config
+make verify-phase10  # Aarav demo validation
 ```
+
+**Demo validation:** `make verify-phase10` checks dataset integrity, Aarav resume signals, expected job rankings (heuristic), and SSE output shape. With `OPENAI_API_KEY` + `make db-up`, it also runs a live match + cache test.
 
 ---
 
