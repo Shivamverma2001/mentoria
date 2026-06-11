@@ -2,7 +2,7 @@
 
 Mentoria take-home assignment: match a candidate resume against job descriptions and stream the top 5 results with personalized reasoning.
 
-> **Status:** Phase 0–7 complete (full backend API). Frontend UI and Docker compose polish in progress.
+> **Status:** Phase 0–8 complete (full stack UI + API). Docker compose polish and submission docs in progress.
 
 ## Quick start
 
@@ -22,6 +22,7 @@ cd backend && .venv/bin/uvicorn app.main:app --reload --port 8000
 
 # 5. Frontend (separate terminal)
 cd frontend && npm install && npm run dev
+# Open http://localhost:5173 → Load sample resume → Match jobs
 
 # Verify
 make verify-phase2
@@ -30,6 +31,7 @@ make verify-phase4
 make verify-phase5
 make verify-phase6
 make verify-phase7
+make verify-phase8
 ```
 
 **API docs:** [docs/API.md](docs/API.md) · Interactive: http://localhost:8000/docs

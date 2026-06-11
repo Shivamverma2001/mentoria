@@ -148,7 +148,7 @@ Stop yourself if you drift here — time is better spent on architecture + strea
 - [x] Stream 5 `match` events sequentially (50ms stagger for UX)
 - [x] Progress `status` events: parsing, embedding, retrieving, ranking
 - [x] `done` event with `duration_ms`
-- [ ] Frontend progressive updates — **Phase 8**
+- [x] Frontend progressive updates — **Phase 8**
 
 ---
 
@@ -196,16 +196,17 @@ Stop yourself if you drift here — time is better spent on architecture + strea
 
 ---
 
-## Phase 8 — Frontend (React + TypeScript)
+## Phase 8 — Frontend (React + TypeScript) ✅
 
-- [ ] Resume input: textarea (paste) + file upload (PDF)
-- [ ] “Match jobs” button triggers **streaming** match (EventSource / fetch stream / WebSocket)
-- [ ] Loading / progress UI while stream is active (not a blank screen for 30s)
-- [ ] Results list: exactly 5 job cards, ordered **best → worst**
-- [ ] Each card shows: title, company, match score, reasoning, highlight bullet
-- [ ] (Nice to have) location, remote, or apply link from job data
-- [ ] Error state if stream fails or resume is invalid
-- [ ] Plain Tailwind UI is fine — do not over-invest in design
+- [x] Resume input: textarea (paste) + file upload (PDF)
+- [x] “Match jobs” triggers **streaming** match (fetch + ReadableStream SSE parser)
+- [x] Progress UI with stage labels + match count while stream active
+- [x] Results list: job cards appear incrementally, ordered **best → worst**
+- [x] Each card: title, company, match score, reasoning, highlight bullet
+- [x] Location + remote on cards
+- [x] Error state + cancel + clear results
+- [x] Load sample resume button
+- [x] `make verify-phase8` (vitest + build)
 
 ---
 
