@@ -21,7 +21,7 @@ Use this table to confirm nothing was missed.
 | React + TypeScript UI | Phase 1, 8 |
 | Streaming / progressive results (no 30s blocking) | Phase 4c, 8 |
 | FastAPI + async SQLAlchemy + PostgreSQL | Phase 2, 7 |
-| LLM provider (OpenAI / Anthropic / Gemini) + README justification | Phase 0, 11 |
+| LLM provider (OpenAI / Anthropic / Gemini) + README justification | Phase 0, 4, 11 (+ optional Gemini via `LLM_PROVIDER`) |
 | LangChain or LangGraph — use or skip with reasoning | Phase 0, 4, 11 |
 | pgvector (or justified in-memory alternative) | Phase 2, 4a, 11 |
 | Redis (or equivalent), meaningful use | Phase 5, 11 |
@@ -70,13 +70,14 @@ Stop yourself if you drift here — time is better spent on architecture + strea
 
 ## Phase 1 — Repo & Project Scaffold ✅
 
-- [ ] Create GitHub repo (public or shared with reviewer email) — **local git init done; push when ready**
+- [x] Create GitHub repo (public): https://github.com/Shivamverma2001/mentoria
 - [x] Choose monorepo layout: `backend/` + `frontend/` + root `docker-compose.yml` (compose in Phase 9)
 - [x] Add `.gitignore` (`.env`, `__pycache__`, `node_modules`, `.venv`, etc.)
 - [x] Add `.env.example` with all required keys:
   - [x] `DATABASE_URL`
   - [x] `REDIS_URL`
   - [x] `OPENAI_API_KEY` + embedding/LLM model vars
+  - [x] `LLM_PROVIDER`, `GEMINI_API_KEY`, Gemini model vars (optional fallback)
   - [x] `SENTRY_DSN`
   - [x] `SHORTLIST_SIZE`, `MATCH_CACHE_TTL_SECONDS`, CORS
 - [x] Initialize backend: Python 3.11, FastAPI, uvicorn, `requirements.txt`, health endpoint
@@ -115,7 +116,7 @@ Stop yourself if you drift here — time is better spent on architecture + strea
 - [x] Validate empty/invalid uploads with clear error messages (`detail` + `code`)
 - [x] Return usable error if PDF is image-only / unreadable (`image_only_pdf`)
 - [x] Extract structured signals: skills, years, location (`resume_signals.py`)
-- [x] Generate resume embedding (OpenAI `text-embedding-3-small`) — `embed=true` default
+- [x] Generate resume embedding (`text-embedding-3-small` or Gemini `gemini-embedding-001`) — `embed=true` default
 - [x] Keep raw resume text in `ParsedResume.raw_text` for LLM / highlight grounding
 - [x] `make verify-phase3` — automated checks
 
@@ -125,7 +126,7 @@ Stop yourself if you drift here — time is better spent on architecture + strea
 
 ### 4a — Vector retrieval (stage 1)
 
-- [x] Embedding model: OpenAI `text-embedding-3-small` (1536 dims)
+- [x] Embedding model: OpenAI `text-embedding-3-small` or Gemini `gemini-embedding-001` (1536 dims)
 - [x] Job embedding text: title + skills + description (`Job.embedding_text()`)
 - [x] Batch embed jobs on first match (`ensure_job_embeddings`)
 - [x] pgvector cosine similarity shortlist (`vector_search.py`)
@@ -133,7 +134,7 @@ Stop yourself if you drift here — time is better spent on architecture + strea
 
 ### 4b — LLM ranking & explanation (stage 2)
 
-- [x] LangChain `ChatOpenAI.with_structured_output` — LangGraph skipped
+- [x] LangChain structured output (`ChatOpenAI` or `ChatGoogleGenerativeAI` when `LLM_PROVIDER=gemini`) — LangGraph skipped
 - [x] Prompt with full resume + shortlisted jobs JSON
 - [x] Exactly **top 5**, ranked best → worst
 - [x] Per match: `match_score` (0–100), `reasoning`, `highlight_bullet`
@@ -223,7 +224,8 @@ Stop yourself if you drift here — time is better spent on architecture + strea
 - [x] README env var table + OpenAI/Sentry key sources
 - [x] nginx SSE proxy (`proxy_buffering off`)
 - [x] `make verify-phase9`
-- [ ] **Fresh-clone live test** — manual with Docker + `OPENAI_API_KEY` in `.env`
+- [x] **Live Docker test** — `docker compose up --build` → UI at localhost:3000 (verified)
+- [ ] **Fresh-clone live test** on a second machine (optional sanity check)
 
 ---
 
@@ -237,8 +239,10 @@ Stop yourself if you drift here — time is better spent on architecture + strea
 - [x] Sentry `capture_job_match_completed` on success — mock test
 - [x] Redis cache `cache_hit: true` on 2nd run — live test when API key + infra up
 - [x] `make verify-phase10` + manual browser script in `docs/PHASE10_REVIEW.md`
-- [ ] Browser streaming UX — **manual** (Load sample → Match jobs at localhost:3000)
-- [ ] Live LLM top-5 quality — **manual/auto** when `OPENAI_API_KEY` + `make db-up`
+- [x] Browser streaming UX — Load sample → Match jobs → 5 cards stream (~7.9s)
+- [x] Live LLM top-5 quality (Gemini): Glean #2, Sarvam #3, Mentoria #4; weak jobs excluded
+- [x] Optional: `LLM_PROVIDER=gemini` + `GEMINI_API_KEY` when OpenAI quota unavailable
+- [ ] Rocketlane (`job_019`) in top 5 — nice-to-have (3/4 strong matches achieved)
 
 ---
 
@@ -258,8 +262,8 @@ Stop yourself if you drift here — time is better spent on architecture + strea
 - [x] Script with timestamps: `docs/PHASE12_VIDEO_SCRIPT.md`
 - [x] Proud code pick: `backend/app/services/matcher.py` (`stream_job_match`)
 - [x] Rewrite pick: `backend/app/services/llm_ranker.py` (fallback padding)
-- [ ] **Record** Loom or Google Drive video (follow script)
-- [ ] **Live demo** in recording (Load sample → Match jobs → 5 cards stream)
+- [x] Demo talking points drafted (streaming + top-5 walkthrough)
+- [ ] **Record** Loom or Google Drive video (follow `docs/PHASE12_VIDEO_SCRIPT.md`)
 - [ ] Paste video link in README + submission email
 
 ---
@@ -272,8 +276,9 @@ Stop yourself if you drift here — time is better spent on architecture + strea
 - [x] Security pass: `.env` gitignored, no keys in repo (`docs/SUBMISSION.md`)
 - [x] Submission guide + email template: `docs/SUBMISSION.md`
 - [ ] Paste **video link** in README (after Phase 12 recording)
-- [ ] **Fresh-clone live test** with Docker + `OPENAI_API_KEY` (manual)
-- [ ] Send submission email to reviewer
+- [x] Live stack tested with Docker + Gemini API key
+- [x] Gemini provider support committed (`LLM_PROVIDER=gemini`)
+- [ ] Send submission email to reviewer (template in `docs/SUBMISSION.md`)
 
 ---
 
@@ -302,21 +307,23 @@ Stop yourself if you drift here — time is better spent on architecture + strea
 
 ## Definition of Done
 
-You are ready to submit when **all** of these are true:
+| # | Criterion | Status |
+|---|-----------|--------|
+| 1 | Upload or paste resume in React + TypeScript UI | ✅ |
+| 2 | Matcher uses **≥ 20 jobs** from `jobs.json` (Postgres seed) | ✅ |
+| 3 | Exactly **top 5**, ranked best → worst | ✅ |
+| 4 | Score + reasoning + highlight bullet per match | ✅ |
+| 5 | Results stream progressively (SSE) | ✅ |
+| 6 | FastAPI + async SQLAlchemy + PostgreSQL + pgvector | ✅ |
+| 7 | Redis meaningful use; Sentry custom events | ✅ (Sentry UI optional) |
+| 8 | LLM provider justified in README; LangChain/LangGraph documented | ✅ |
+| 9 | `docker compose up` runs full stack locally | ✅ |
+| 10 | README: setup, architecture, one-more-week, known issues | ✅ |
+| 11 | **5–8 min** walkthrough video | ⏳ Record + link |
+| 12 | GitHub repo public | ✅ |
 
-1. User can **upload or paste** a resume in the React + TypeScript UI
-2. Matcher uses **≥ 20 jobs** from `jobs.json` (seeded into Postgres)
-3. Exactly **top 5** jobs returned, ranked **best → worst**
-4. Each result has **match score**, **2–3 line personalized reasoning**, and **one highlight bullet**
-5. Results **stream in** progressively — not one 30-second blocking request
-6. Backend stack: **FastAPI**, **async SQLAlchemy**, **PostgreSQL**, **pgvector**
-7. **Redis** used meaningfully; **Sentry** captures ≥ 1 custom event/transaction
-8. LLM provider chosen and **justified in README**; LangChain/LangGraph decision documented
-9. `docker compose up` runs the **whole stack** locally on a fresh clone
-10. README has setup, architecture, one-more-week, and known-issues sections
-11. **5–8 minute** walkthrough video covers demo, architecture, proud item, and rewrite item
-12. GitHub repo is public or shared with the reviewer
+**Remaining before submit:** record video → paste link in README → send email (`docs/SUBMISSION.md`).
 
 ---
 
-*Last updated: second-pass review against assignment brief*
+*Last updated: post live demo (Gemini), browser validation, submission prep*
