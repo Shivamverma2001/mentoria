@@ -21,6 +21,7 @@ class StatusEvent(BaseModel):
 class DoneEvent(BaseModel):
     total: int
     duration_ms: int
+    cache_hit: bool = False
 
 
 class ErrorEvent(BaseModel):

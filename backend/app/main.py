@@ -12,6 +12,7 @@ from app.api.resume import router as resume_router
 from app.core.config import settings
 from app.core.database import async_session_factory, engine
 from app.core.db_init import init_database
+from app.core.redis import close_redis, init_redis, ping_redis, redis_available
 from app.services.llm_ranker import MatchRankingError
 from app.services.resume_errors import ResumeEmbeddingError, ResumeParseError
 from app.services.seed import count_jobs
@@ -22,13 +23,18 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.state.job_count = 0
+    app.state.redis_connected = await init_redis()
+
     try:
         async with async_session_factory() as session:
             app.state.job_count = await init_database(session)
         logger.info("Database initialized with %s jobs", app.state.job_count)
     except Exception as exc:
         logger.warning("Database init skipped (is Postgres running?): %s", exc)
+
     yield
+
+    await close_redis()
     await engine.dispose()
 
 
@@ -79,18 +85,25 @@ app.include_router(match_router)
 
 @app.get("/api/health")
 async def health() -> dict:
+    redis_status = await ping_redis()
+    payload: dict = {
+        "status": "ok",
+        "redis": redis_status["status"],
+        "cache_enabled": redis_available(),
+    }
+
     try:
         async with async_session_factory() as session:
             await session.execute(text("SELECT 1"))
             job_count = await count_jobs(session)
-        return {
-            "status": "ok",
-            "database": "connected",
-            "jobs_count": job_count,
-        }
+        payload["database"] = "connected"
+        payload["jobs_count"] = job_count
     except Exception as exc:
-        return {
-            "status": "degraded",
-            "database": "disconnected",
-            "error": str(exc),
-        }
+        payload["status"] = "degraded"
+        payload["database"] = "disconnected"
+        payload["error"] = str(exc)
+
+    if payload.get("database") != "connected" or redis_status["status"] != "connected":
+        payload["status"] = "degraded"
+
+    return payload

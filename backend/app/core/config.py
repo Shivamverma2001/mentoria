@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     backend_cors_origins: str = "http://localhost:5173,http://localhost:3000"
     shortlist_size: int = 12
     match_cache_ttl_seconds: int = 3600
+    resume_embedding_cache_ttl_seconds: int = 86400
+    job_embedding_cache_ttl_seconds: int = 604800
 
     @property
     def cors_origins(self) -> list[str]:

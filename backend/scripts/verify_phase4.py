@@ -142,9 +142,12 @@ async def verify_sse_stream() -> None:
     chunks: list[str] = []
     with (
         patch("app.services.matcher.ingest_resume", AsyncMock(return_value=parsed)),
+        patch("app.services.matcher.get_cached_matches", AsyncMock(return_value=None)),
+        patch("app.services.matcher.embed_text", AsyncMock(return_value=[0.1] * 1536)),
         patch("app.services.matcher.ensure_job_embeddings", AsyncMock(return_value=25)),
         patch("app.services.matcher.search_similar_jobs", AsyncMock(return_value=shortlist)),
         patch("app.services.matcher.rank_jobs_with_llm", AsyncMock(return_value=mock_matches)),
+        patch("app.services.matcher.set_cached_matches", AsyncMock(return_value=True)),
     ):
         async for chunk in stream_job_match(session, resume_text=resume):
             chunks.append(chunk)
@@ -166,7 +169,7 @@ def verify_api_stream_endpoint() -> None:
     parsed = ParsedResume(
         raw_text=resume,
         signals=ResumeSignals(years_experience=5, location="Bengaluru, India", skills=["Python"]),
-        embedding=[0.0] * 1536,
+        embedding=None,
     )
     shortlist = [
         _sample_job(f"job_00{i}", f"Role {i}", f"Company {i}") for i in range(1, 7)
@@ -188,9 +191,12 @@ def verify_api_stream_endpoint() -> None:
     client = TestClient(app)
     with (
         patch("app.services.matcher.ingest_resume", AsyncMock(return_value=parsed)),
+        patch("app.services.matcher.get_cached_matches", AsyncMock(return_value=None)),
+        patch("app.services.matcher.embed_text", AsyncMock(return_value=[0.0] * 1536)),
         patch("app.services.matcher.ensure_job_embeddings", AsyncMock(return_value=0)),
         patch("app.services.matcher.search_similar_jobs", AsyncMock(return_value=shortlist)),
         patch("app.services.matcher.rank_jobs_with_llm", AsyncMock(return_value=mock_matches)),
+        patch("app.services.matcher.set_cached_matches", AsyncMock(return_value=True)),
     ):
         response = client.post("/api/match/stream/json", json={"resume_text": resume})
 

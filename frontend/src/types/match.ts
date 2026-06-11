@@ -18,6 +18,7 @@ export interface StatusEvent {
 export interface DoneEvent {
   total: number
   duration_ms: number
+  cache_hit?: boolean
 }
 
 export interface ErrorEvent {

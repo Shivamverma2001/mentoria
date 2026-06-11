@@ -152,15 +152,18 @@ Stop yourself if you drift here — time is better spent on architecture + strea
 
 ---
 
-## Phase 5 — Caching (Redis)
+## Phase 5 — Caching (Redis) ✅
 
-- [ ] Add Redis to `docker-compose.yml`
-- [ ] Connect Redis client in FastAPI app
-- [ ] Apply caching in at least one **meaningful** place, e.g.:
-  - [ ] Job embeddings cache (avoid re-embedding unchanged jobs)
-  - [ ] LLM result cache keyed by `hash(resume_text)` for repeat demos
-  - [ ] Rate limit / session state for in-flight match jobs
-- [ ] Document what you cache and TTL in README
+- [x] Add Redis to `docker-compose.yml` (`redis:7-alpine`, port 6379)
+- [x] Connect async Redis client in FastAPI (`app/core/redis.py`, lifespan)
+- [x] Meaningful caches implemented:
+  - [x] **Match results** — `sha256(resume_text)`, TTL 1h — skips LLM on repeat
+  - [x] **Resume embeddings** — TTL 24h — skips OpenAI embed call
+  - [x] **Job embeddings** — per `job_id` + content hash, TTL 7d
+- [x] Graceful fallback when Redis unavailable (caching disabled, app works)
+- [x] `done.cache_hit` flag in SSE stream
+- [x] Document TTLs in `.env.example` + README
+- [x] `make verify-phase5`
 
 ---
 

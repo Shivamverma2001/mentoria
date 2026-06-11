@@ -2,7 +2,7 @@
 
 Mentoria take-home assignment: match a candidate resume against job descriptions and stream the top 5 results with personalized reasoning.
 
-> **Status:** Phase 0–4 complete (matching pipeline with SSE). Redis, Sentry, UI, and Docker polish in progress.
+> **Status:** Phase 0–5 complete (matching + Redis caching). Sentry, UI, and full Docker compose in progress.
 
 ## Quick start
 
@@ -13,8 +13,8 @@ cp .env.example .env
 # 2. Install backend (Python 3.11+)
 make backend-install
 
-# 3. Start Postgres + pgvector and seed jobs
-make db-up          # requires Docker Desktop running
+# 3. Start Postgres + Redis and seed jobs
+make db-up          # postgres + redis (requires Docker Desktop)
 make db-seed        # loads 25 jobs from backend/data/jobs.json
 
 # 4. Run API
@@ -27,7 +27,19 @@ cd frontend && npm install && npm run dev
 make verify-phase2
 make verify-phase3
 make verify-phase4
+make verify-phase5
 ```
+
+## Caching (Redis)
+
+| Cache | TTL (default) | Env var |
+|-------|---------------|---------|
+| Match results (top 5 + reasoning) | 1 hour | `MATCH_CACHE_TTL_SECONDS` |
+| Resume embeddings | 24 hours | `RESUME_EMBEDDING_CACHE_TTL_SECONDS` |
+| Job embeddings | 7 days | `JOB_EMBEDDING_CACHE_TTL_SECONDS` |
+
+Repeat the same resume match within TTL → faster response, `cache_hit: true` in the `done` SSE event.
+
 
 - Frontend: http://localhost:5173
 - Backend health: http://localhost:8000/api/health
