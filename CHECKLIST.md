@@ -288,7 +288,7 @@ Stop yourself if you drift here — time is better spent on architecture + strea
 - [x] Deploy guide: Neon (pgvector) + Upstash Redis + Render — `docs/DEPLOY.md`
 - [x] Frontend `VITE_API_BASE_URL` for cross-origin cloud API
 - [x] Structured JSON logging + `X-Request-ID` middleware (`LOG_JSON=true`)
-- [ ] **Deploy live** — follow `docs/DEPLOY.md`, paste URLs in README
+- [x] **Deploy live** — https://mentoria-ui.onrender.com (README updated)
 
 ---
 

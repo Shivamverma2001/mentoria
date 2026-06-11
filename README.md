@@ -2,7 +2,8 @@
 
 Mentoria take-home assignment: match a candidate resume against job descriptions and stream the top 5 results with personalized reasoning.
 
-> **Status:** Ready to submit — record video (5–8 min), paste link below, send [submission email](docs/SUBMISSION.md).
+> **Status:** Ready to submit — record video (5–8 min), paste link below, send [submission email](docs/SUBMISSION.md).  
+> **Live demo:** [https://mentoria-ui.onrender.com](https://mentoria-ui.onrender.com)
 
 ---
 
@@ -370,8 +371,9 @@ Honest list of what was deprioritized or left imperfect:
 | Postgres + pgvector | [Neon](https://neon.tech) |
 | Redis cache | [Upstash](https://upstash.com) |
 
-**Live demo:** _[Add after deploy — e.g. https://mentoria-ui.onrender.com]_  
-**API docs:** _[e.g. https://mentoria-api.onrender.com/docs]_
+**Live demo:** [https://mentoria-ui.onrender.com](https://mentoria-ui.onrender.com)  
+**API docs:** [https://mentoria-api-sklw.onrender.com/docs](https://mentoria-api-sklw.onrender.com/docs)  
+**Health:** [https://mentoria-api-sklw.onrender.com/api/health](https://mentoria-api-sklw.onrender.com/api/health)
 
 One-click blueprint: connect GitHub repo → Render reads [`render.yaml`](render.yaml).  
 Full steps: **[docs/DEPLOY.md](docs/DEPLOY.md)**
@@ -385,7 +387,8 @@ Production logging: `LOG_JSON=true` emits structured JSON logs (request ID, dura
 | Deliverable | Link |
 |-------------|------|
 | **Repository** | https://github.com/Shivamverma2001/mentoria |
-| **Live demo** | _Add Render URL after deploy_ |
+| **Live demo** | https://mentoria-ui.onrender.com |
+| **API** | https://mentoria-api-sklw.onrender.com/docs |
 | **Walkthrough video** | _Add Loom/Drive URL above after recording_ |
 | **Submission checklist** | [docs/SUBMISSION.md](docs/SUBMISSION.md) |
 
