@@ -2,7 +2,7 @@
 
 Mentoria take-home assignment: match a candidate resume against job descriptions and stream the top 5 results with personalized reasoning.
 
-> **Status:** Phase 0–2 complete (planning, scaffold, database layer). Matching pipeline and UI wiring in progress.
+> **Status:** Phase 0–3 complete (through resume ingestion). Matching pipeline and UI wiring in progress.
 
 ## Quick start
 
@@ -23,14 +23,17 @@ cd backend && .venv/bin/uvicorn app.main:app --reload --port 8000
 # 5. Frontend (separate terminal)
 cd frontend && npm install && npm run dev
 
-# Verify Phase 2
+# Verify
 make verify-phase2
+make verify-phase3
 ```
 
 - Frontend: http://localhost:5173
 - Backend health: http://localhost:8000/api/health
 - Jobs list: http://localhost:8000/api/jobs
 - Job count: http://localhost:8000/api/jobs/count
+- Resume ingest (paste JSON): `POST /api/resume/ingest/json` with `{"resume_text":"...", "embed": false}`
+- Resume ingest (form): `POST /api/resume/ingest` with `resume_text` or `resume_file` (PDF)
 
 ## Project layout
 

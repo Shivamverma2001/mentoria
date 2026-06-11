@@ -108,15 +108,16 @@ Stop yourself if you drift here — time is better spent on architecture + strea
 
 ---
 
-## Phase 3 — Resume Ingestion
+## Phase 3 — Resume Ingestion ✅
 
-- [ ] Support **resume paste** (plain text) in API
-- [ ] Support **PDF upload** (e.g. `pypdf` / `pdfplumber`) — extract text server-side
-- [ ] Validate empty/invalid uploads with clear error messages
-- [ ] Return usable error if PDF is image-only / unreadable
-- [ ] (Optional but useful) Extract structured signals from resume: skills, years, location preference
-- [ ] Generate resume embedding (same model as jobs) for the match session
-- [ ] Keep raw resume text available for LLM prompt (needed for highlight bullet grounding)
+- [x] Support **resume paste** (plain text) in API — `POST /api/resume/ingest` + `/ingest/json`
+- [x] Support **PDF upload** (pypdf) — extract text server-side
+- [x] Validate empty/invalid uploads with clear error messages (`detail` + `code`)
+- [x] Return usable error if PDF is image-only / unreadable (`image_only_pdf`)
+- [x] Extract structured signals: skills, years, location (`resume_signals.py`)
+- [x] Generate resume embedding (OpenAI `text-embedding-3-small`) — `embed=true` default
+- [x] Keep raw resume text in `ParsedResume.raw_text` for LLM / highlight grounding
+- [x] `make verify-phase3` — automated checks
 
 ---
 
