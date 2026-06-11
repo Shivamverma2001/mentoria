@@ -2,89 +2,133 @@
 
 Mentoria take-home assignment: match a candidate resume against job descriptions and stream the top 5 results with personalized reasoning.
 
-> **Status:** Phase 0–8 complete (full stack UI + API). Docker compose polish and submission docs in progress.
+> **Status:** Phase 0–9 complete (full Docker stack). Submission docs (README architecture, video) in Phase 11–13.
 
-## Quick start
+---
+
+## Docker quick start (recommended)
 
 ```bash
-# 1. Copy env and add your OpenAI + Sentry keys
+# 1. Copy env and add your OpenAI API key (required for matching)
 cp .env.example .env
+# Edit .env → set OPENAI_API_KEY=sk-...
 
-# 2. Install backend (Python 3.11+)
-make backend-install
+# 2. Start the full stack (Postgres + Redis + backend + frontend)
+docker compose up --build
+# Or detached: make compose-up-d
 
-# 3. Start Postgres + Redis and seed jobs
-make db-up          # postgres + redis (requires Docker Desktop)
-make db-seed        # loads 25 jobs from backend/data/jobs.json
-
-# 4. Run API
-cd backend && .venv/bin/uvicorn app.main:app --reload --port 8000
-
-# 5. Frontend (separate terminal)
-cd frontend && npm install && npm run dev
-# Open http://localhost:5173 → Load sample resume → Match jobs
-
-# Verify
-make verify-phase2
-make verify-phase3
-make verify-phase4
-make verify-phase5
-make verify-phase6
-make verify-phase7
-make verify-phase8
+# 3. Open the app
+# UI:     http://localhost:3000
+# API:    http://localhost:8000/docs
+# Health: http://localhost:3000/api/health
 ```
 
-**API docs:** [docs/API.md](docs/API.md) · Interactive: http://localhost:8000/docs
+On first startup the backend **auto-seeds 25 jobs** from `backend/data/jobs.json` when the database is empty.
 
-## Observability (Sentry)
+**Demo flow:** Load sample resume → Match jobs → watch 5 results stream in.
 
-1. Create a free project at [sentry.io](https://sentry.io) and copy the DSN into `.env` as `SENTRY_DSN`.
-2. On each successful match, the backend emits a **`job_match_completed`** event with `duration_ms`, `shortlist_size`, `llm_total_tokens`, `top_score`, and `cache_hit`.
-3. Check `/api/health` — `"sentry": "enabled"` when DSN is configured.
+```bash
+make compose-down   # stop all services
+```
 
-## Caching (Redis)
+---
 
-| Cache | TTL (default) | Env var |
-|-------|---------------|---------|
-| Match results (top 5 + reasoning) | 1 hour | `MATCH_CACHE_TTL_SECONDS` |
-| Resume embeddings | 24 hours | `RESUME_EMBEDDING_CACHE_TTL_SECONDS` |
-| Job embeddings | 7 days | `JOB_EMBEDDING_CACHE_TTL_SECONDS` |
+## Local dev (without Docker frontend)
 
-Repeat the same resume match within TTL → faster response, `cache_hit: true` in the `done` SSE event.
+```bash
+cp .env.example .env          # set OPENAI_API_KEY
+make backend-install
+make db-up                    # postgres + redis only
+make db-seed
 
+# Terminal 1
+cd backend && .venv/bin/uvicorn app.main:app --reload --port 8000
 
-- Frontend: http://localhost:5173
-- Backend health: http://localhost:8000/api/health
-- Jobs list: http://localhost:8000/api/jobs
-- Job count: http://localhost:8000/api/jobs/count
-- Resume ingest (paste JSON): `POST /api/resume/ingest/json` with `{"resume_text":"...", "embed": false}`
-- Resume ingest (form): `POST /api/resume/ingest` with `resume_text` or `resume_file` (PDF)
-- **Job match (SSE):** `POST /api/match/stream/json` with `{"resume_text":"..."}` — streams top 5 matches
+# Terminal 2
+cd frontend && npm install && npm run dev
+# http://localhost:5173
+```
+
+---
+
+## Environment variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `OPENAI_API_KEY` | **Yes** (matching) | From [platform.openai.com](https://platform.openai.com/api-keys) |
+| `DATABASE_URL` | Auto in Docker | Local: `postgresql+asyncpg://arya:arya@localhost:5432/arya_jobs` |
+| `REDIS_URL` | Auto in Docker | Local: `redis://localhost:6379/0` |
+| `SENTRY_DSN` | No | From [sentry.io](https://sentry.io) — free tier |
+| `SENTRY_ENVIRONMENT` | No | Default `development` |
+| `OPENAI_EMBEDDING_MODEL` | No | Default `text-embedding-3-small` |
+| `OPENAI_LLM_MODEL` | No | Default `gpt-4o-mini` |
+| `BACKEND_CORS_ORIGINS` | No | Comma-separated frontend URLs |
+| `SHORTLIST_SIZE` | No | Default `12` |
+| `MATCH_CACHE_TTL_SECONDS` | No | Default `3600` |
+| `RESUME_EMBEDDING_CACHE_TTL_SECONDS` | No | Default `86400` |
+| `JOB_EMBEDDING_CACHE_TTL_SECONDS` | No | Default `604800` |
+
+Docker Compose overrides `DATABASE_URL` and `REDIS_URL` to use internal service hostnames.
+
+---
+
+## Verify
+
+```bash
+make verify-phase2   # database seed
+make verify-phase3   # resume ingestion
+make verify-phase4   # matching + SSE
+make verify-phase5   # Redis cache
+make verify-phase6   # Sentry
+make verify-phase7   # API schemas
+make verify-phase8   # frontend build + tests
+make verify-phase9   # docker-compose config
+```
+
+---
+
+## API & docs
+
+- **API reference:** [docs/API.md](docs/API.md)
+- **Interactive docs:** http://localhost:8000/docs
+- **Architecture draft:** [docs/PHASE0_PLAN.md](docs/PHASE0_PLAN.md)
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/health` | DB, Redis, Sentry status |
+| `GET /api/jobs` | List 25 seeded jobs |
+| `POST /api/match/stream/json` | SSE job matching |
+| `POST /api/resume/ingest/json` | Parse resume |
+
+---
+
+## Docker services
+
+| Service | Port | Image |
+|---------|------|-------|
+| frontend | 3000 → 80 | nginx + React build |
+| backend | 8000 | FastAPI / uvicorn |
+| postgres | 5432 | pgvector/pg16 |
+| redis | 6379 | redis:7-alpine |
+
+Backend waits for Postgres + Redis healthchecks. Frontend waits for backend healthcheck. Jobs seed automatically on startup.
+
+---
 
 ## Project layout
 
 ```
 mentoria/
-├── backend/           # FastAPI + async SQLAlchemy
-│   ├── app/
-│   └── data/          # jobs.json + sample resume
-├── frontend/          # React + TypeScript + Tailwind
-├── docs/
-│   └── PHASE0_PLAN.md # Architecture decisions (draft)
-└── docker-compose.yml # Phase 9
+├── backend/            # FastAPI + async SQLAlchemy
+├── frontend/           # React + TypeScript + Tailwind
+├── docs/               # API.md, phase reviews, architecture
+├── docker-compose.yml  # Full stack
+└── .env.example
 ```
 
-## Architecture
-
-See [docs/PHASE0_PLAN.md](docs/PHASE0_PLAN.md) for the full design doc draft. Summary:
-
-- **Two-stage matching:** pgvector shortlist (12) → OpenAI gpt-4o-mini rerank (top 5)
-- **Streaming:** SSE from `POST /api/match/stream`
-- **Stack:** FastAPI, async SQLAlchemy, PostgreSQL + pgvector, Redis, Sentry, LangChain (structured output)
-
-Full README sections (setup, one-more-week, known issues) will be completed in Phase 11.
+---
 
 ## Sample data
 
 - Jobs: `backend/data/jobs.json` (25 roles)
-- Demo resume: `backend/data/sample_resume_aarav_mehta.txt`
+- Demo resume: `backend/data/sample_resume_aarav_mehta.txt` (also in UI via Load sample)

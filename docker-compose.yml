@@ -1,15 +1,4 @@
 services:
-  redis:
-    image: redis:7-alpine
-    container_name: arya-redis
-    ports:
-      - "6379:6379"
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-
   postgres:
     image: pgvector/pgvector:pg16
     container_name: arya-postgres
@@ -26,7 +15,66 @@ services:
       test: ["CMD-SHELL", "pg_isready -U arya -d arya_jobs"]
       interval: 5s
       timeout: 5s
-      retries: 10
+      retries: 12
+
+  redis:
+    image: redis:7-alpine
+    container_name: arya-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: arya-backend
+    environment:
+      DATABASE_URL: postgresql+asyncpg://arya:arya@postgres:5432/arya_jobs
+      REDIS_URL: redis://redis:6379/0
+      BACKEND_CORS_ORIGINS: http://localhost:3000,http://localhost:5173,http://localhost:8000
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_EMBEDDING_MODEL: ${OPENAI_EMBEDDING_MODEL:-text-embedding-3-small}
+      OPENAI_LLM_MODEL: ${OPENAI_LLM_MODEL:-gpt-4o-mini}
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-development}
+      SENTRY_TRACES_SAMPLE_RATE: ${SENTRY_TRACES_SAMPLE_RATE:-0.2}
+      SHORTLIST_SIZE: ${SHORTLIST_SIZE:-12}
+      MATCH_CACHE_TTL_SECONDS: ${MATCH_CACHE_TTL_SECONDS:-3600}
+      RESUME_EMBEDDING_CACHE_TTL_SECONDS: ${RESUME_EMBEDDING_CACHE_TTL_SECONDS:-86400}
+      JOB_EMBEDDING_CACHE_TTL_SECONDS: ${JOB_EMBEDDING_CACHE_TTL_SECONDS:-604800}
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health')\"",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: arya-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      backend:
+        condition: service_healthy
 
 volumes:
   postgres_data:

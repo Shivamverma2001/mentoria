@@ -210,19 +210,20 @@ Stop yourself if you drift here — time is better spent on architecture + strea
 
 ---
 
-## Phase 9 — Docker & Local Run
+## Phase 9 — Docker & Local Run ✅
 
-- [ ] Root `docker-compose.yml` with services:
-  - [ ] `postgres` (with pgvector)
-  - [ ] `redis`
-  - [ ] `backend`
-  - [ ] `frontend` (preferred in compose; if dev-only, document clearly in README)
-- [ ] Backend waits for Postgres/Redis healthy before starting
-- [ ] One-command startup documented, e.g. `docker compose up --build`
-- [ ] Seed runs automatically or via documented step
-- [ ] README lists every env var and where to get API keys
-- [ ] **Fresh-clone test:** new machine / clean clone → `docker compose up` → demo works
-- [ ] Full flow: upload Aarav resume → see top 5 stream in
+- [x] Root `docker-compose.yml` with services:
+  - [x] `postgres` (pgvector/pg16)
+  - [x] `redis` (redis:7-alpine)
+  - [x] `backend` (FastAPI, port 8000)
+  - [x] `frontend` (nginx, port 3000 → 80)
+- [x] Backend waits for Postgres/Redis healthy; frontend waits for backend
+- [x] One-command: `docker compose up --build` / `make compose-up`
+- [x] Seed on startup via `init_database()` when DB empty
+- [x] README env var table + OpenAI/Sentry key sources
+- [x] nginx SSE proxy (`proxy_buffering off`)
+- [x] `make verify-phase9`
+- [ ] **Fresh-clone live test** — manual with Docker + `OPENAI_API_KEY` in `.env`
 
 ---
 

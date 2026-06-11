@@ -1,4 +1,4 @@
-.PHONY: db-up db-down db-seed redis-up backend-install verify-phase2 verify-phase3 verify-phase4 verify-phase5 verify-phase6 verify-phase7 verify-phase8
+.PHONY: db-up db-down db-seed redis-up compose-up compose-down compose-logs backend-install verify-phase2 verify-phase3 verify-phase4 verify-phase5 verify-phase6 verify-phase7 verify-phase8 verify-phase9
 
 db-up:
 	docker compose up -d postgres redis
@@ -8,6 +8,18 @@ redis-up:
 
 db-down:
 	docker compose down
+
+compose-up:
+	docker compose up --build
+
+compose-up-d:
+	docker compose up --build -d
+
+compose-down:
+	docker compose down
+
+compose-logs:
+	docker compose logs -f
 
 db-seed:
 	cd backend && .venv/bin/python -m app.scripts.seed
@@ -35,3 +47,6 @@ verify-phase7:
 
 verify-phase8:
 	cd frontend && npm run test && npm run build
+
+verify-phase9:
+	backend/.venv/bin/python backend/scripts/verify_phase9.py
