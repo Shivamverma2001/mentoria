@@ -24,11 +24,12 @@ mentoria-api.onrender.com  (FastAPI Docker)
 
 1. Create a project at [neon.tech](https://neon.tech)
 2. Copy the connection string (starts with `postgresql://`)
-3. Convert for async SQLAlchemy:
+3. Paste Neon’s connection string as `DATABASE_URL` on Render. Either format works:
    ```text
-   postgresql+asyncpg://USER:PASS@HOST/DB?sslmode=require
+   postgresql://USER:PASS@HOST/neondb?sslmode=require
+   postgresql+asyncpg://USER:PASS@HOST/neondb?sslmode=require
    ```
-   Replace `postgresql://` with `postgresql+asyncpg://` and add `?sslmode=require` if missing.
+   The app strips `sslmode` / `channel_binding` (asyncpg incompatible) and enables SSL automatically for Neon.
 4. In Neon SQL editor, run:
    ```sql
    CREATE EXTENSION IF NOT EXISTS vector;

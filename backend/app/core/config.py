@@ -70,11 +70,17 @@ class Settings(BaseSettings):
 
     @property
     def database_url_async(self) -> str:
-        """Normalize cloud Postgres URLs for asyncpg (Neon, Render, etc.)."""
-        url = self.database_url.strip()
-        if url.startswith("postgresql://"):
-            return url.replace("postgresql://", "postgresql+asyncpg://", 1)
+        from app.core.db_url import prepare_async_database_url
+
+        url, _ = prepare_async_database_url(self.database_url)
         return url
+
+    @property
+    def database_connect_args(self) -> dict:
+        from app.core.db_url import prepare_async_database_url
+
+        _, connect_args = prepare_async_database_url(self.database_url)
+        return connect_args
 
     def has_llm_credentials(self) -> bool:
         if self.uses_gemini:
