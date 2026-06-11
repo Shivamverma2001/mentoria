@@ -284,9 +284,11 @@ Stop yourself if you drift here — time is better spent on architecture + strea
 
 ## Optional Bonus (only if core is done)
 
-- [ ] Deploy to Render / Railway / Fly (backend + frontend + managed Postgres)
-- [ ] Live URL in README
-- [ ] Basic structured logging alongside Sentry
+- [x] Render blueprint: `render.yaml` (API Docker + static UI)
+- [x] Deploy guide: Neon (pgvector) + Upstash Redis + Render — `docs/DEPLOY.md`
+- [x] Frontend `VITE_API_BASE_URL` for cross-origin cloud API
+- [x] Structured JSON logging + `X-Request-ID` middleware (`LOG_JSON=true`)
+- [ ] **Deploy live** — follow `docs/DEPLOY.md`, paste URLs in README
 
 ---
 

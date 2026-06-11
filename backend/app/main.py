@@ -13,7 +13,9 @@ from app.api.root import router as root_router
 from app.core.config import settings
 from app.core.database import async_session_factory, engine
 from app.core.db_init import init_database
+from app.core.logging_config import configure_logging
 from app.core.redis import close_redis, init_redis
+from app.core.request_logging import RequestLoggingMiddleware
 from app.core.sentry import init_sentry
 from app.schemas.errors import ErrorResponse
 from app.services.embedding_fingerprint import sync_embedding_fingerprint
@@ -21,6 +23,7 @@ from app.services.llm_ranker import MatchRankingError
 from app.services.resume_errors import ResumeEmbeddingError, ResumeParseError
 logger = logging.getLogger(__name__)
 
+configure_logging()
 init_sentry()
 
 
@@ -79,6 +82,7 @@ async def match_ranking_error_handler(_request: Request, exc: MatchRankingError)
     return JSONResponse(status_code=502, content=body.model_dump())
 
 
+app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,

@@ -31,6 +31,9 @@ class Settings(BaseSettings):
     resume_embedding_cache_ttl_seconds: int = 86400
     job_embedding_cache_ttl_seconds: int = 604800
 
+    log_level: str = "INFO"
+    log_json: bool = False
+
     @property
     def cors_origins(self) -> list[str]:
         return [origin.strip() for origin in self.backend_cors_origins.split(",") if origin.strip()]
@@ -58,6 +61,14 @@ class Settings(BaseSettings):
     @property
     def api_key_env_name(self) -> str:
         return "GEMINI_API_KEY" if self.uses_gemini else "OPENAI_API_KEY"
+
+    @property
+    def database_url_async(self) -> str:
+        """Normalize cloud Postgres URLs for asyncpg (Neon, Render, etc.)."""
+        url = self.database_url.strip()
+        if url.startswith("postgresql://"):
+            return url.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return url
 
     def has_llm_credentials(self) -> bool:
         if self.uses_gemini:

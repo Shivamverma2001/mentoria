@@ -1,3 +1,4 @@
+import { apiUrl } from '../lib/apiBase'
 import { parseSseChunk } from '../lib/parseSse'
 import type { DoneEvent, ErrorEvent, JobMatch, StatusEvent } from '../types/match'
 
@@ -66,7 +67,7 @@ export async function streamMatchFromText(
   handlers: MatchStreamHandlers,
   signal?: AbortSignal,
 ): Promise<void> {
-  const response = await fetch('/api/match/stream/json', {
+  const response = await fetch(apiUrl('/api/match/stream/json'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ resume_text: resumeText }),
@@ -83,7 +84,7 @@ export async function streamMatchFromPdf(
   const form = new FormData()
   form.append('resume_file', file)
 
-  const response = await fetch('/api/match/stream', {
+  const response = await fetch(apiUrl('/api/match/stream'), {
     method: 'POST',
     body: form,
     signal,

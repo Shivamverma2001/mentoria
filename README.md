@@ -94,6 +94,9 @@ cd frontend && npm install && npm run dev
 | `MATCH_CACHE_TTL_SECONDS` | No | Default `3600` |
 | `RESUME_EMBEDDING_CACHE_TTL_SECONDS` | No | Default `86400` |
 | `JOB_EMBEDDING_CACHE_TTL_SECONDS` | No | Default `604800` |
+| `LOG_JSON` | No | `true` in production for structured JSON logs |
+| `LOG_LEVEL` | No | Default `INFO` |
+| `VITE_API_BASE_URL` | Frontend build only | Backend URL for Render static deploy |
 
 Docker Compose overrides `DATABASE_URL` and `REDIS_URL` to use internal service hostnames.
 
@@ -358,11 +361,31 @@ Honest list of what was deprioritized or left imperfect:
 
 ---
 
+## Cloud deploy (optional bonus)
+
+| Service | Platform |
+|---------|----------|
+| Backend API | [Render](https://render.com) Docker web service |
+| Frontend UI | Render static site |
+| Postgres + pgvector | [Neon](https://neon.tech) |
+| Redis cache | [Upstash](https://upstash.com) |
+
+**Live demo:** _[Add after deploy — e.g. https://mentoria-ui.onrender.com]_  
+**API docs:** _[e.g. https://mentoria-api.onrender.com/docs]_
+
+One-click blueprint: connect GitHub repo → Render reads [`render.yaml`](render.yaml).  
+Full steps: **[docs/DEPLOY.md](docs/DEPLOY.md)**
+
+Production logging: `LOG_JSON=true` emits structured JSON logs (request ID, duration, match events) alongside optional Sentry.
+
+---
+
 ## Submission
 
 | Deliverable | Link |
 |-------------|------|
 | **Repository** | https://github.com/Shivamverma2001/mentoria |
+| **Live demo** | _Add Render URL after deploy_ |
 | **Walkthrough video** | _Add Loom/Drive URL above after recording_ |
 | **Submission checklist** | [docs/SUBMISSION.md](docs/SUBMISSION.md) |
 
@@ -376,3 +399,5 @@ Email template and fresh-clone test steps are in `docs/SUBMISSION.md`.
 - [docs/PHASE0_PLAN.md](docs/PHASE0_PLAN.md) — initial architecture decisions
 - [docs/PHASE10_REVIEW.md](docs/PHASE10_REVIEW.md) — demo validation checklist
 - [docs/PHASE12_VIDEO_SCRIPT.md](docs/PHASE12_VIDEO_SCRIPT.md) — video walkthrough script
+- [docs/DEPLOY.md](docs/DEPLOY.md) — Render + Neon + Upstash deployment
+- [docs/ARCHITECTURE_INTERVIEW_GUIDE.md](docs/ARCHITECTURE_INTERVIEW_GUIDE.md) — file-by-file flow + interview Q&A

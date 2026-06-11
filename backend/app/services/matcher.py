@@ -79,7 +79,15 @@ async def _emit_cached_stream(
         "done",
         DoneEvent(total=len(matches), duration_ms=duration_ms, cache_hit=True).model_dump(),
     )
-    logger.info("Match cache stream complete: %s results, %sms", len(matches), duration_ms)
+    logger.info(
+        "job_match_stream_complete",
+        extra={
+            "event": "job_match_stream_complete",
+            "match_count": len(matches),
+            "duration_ms": duration_ms,
+            "cache_hit": True,
+        },
+    )
 
 
 async def stream_job_match(
@@ -141,10 +149,15 @@ async def stream_job_match(
             DoneEvent(total=len(matches), duration_ms=duration_ms, cache_hit=False).model_dump(),
         )
         logger.info(
-            "Match stream complete: %s results, %s jobs embedded this run, %sms",
-            len(matches),
-            embedded,
-            duration_ms,
+            "job_match_stream_complete",
+            extra={
+                "event": "job_match_stream_complete",
+                "match_count": len(matches),
+                "jobs_embedded": embedded,
+                "duration_ms": duration_ms,
+                "cache_hit": False,
+                "shortlist_size": len(shortlist),
+            },
         )
 
     except Exception as exc:
