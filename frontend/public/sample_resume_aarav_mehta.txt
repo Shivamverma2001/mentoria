@@ -1,0 +1,55 @@
+Aarav Mehta
+Senior Backend Engineer  /  AI Systems
+Bengaluru, India  •  aarav.mehta@example.com  •  +91 98XXX XXX45  •  github.com/aaravmehta  •  linkedin.com/in/aaravmehta
+
+SUMMARY
+Senior backend engineer with 5 years of experience building AI-powered products end to end. Shipped LLM-driven features to production at scale, with a strong focus on cost-aware architectures, agent orchestration, and async Python systems. Comfortable across the full stack, but happiest owning backend services and AI infrastructure. Looking for a senior IC or founding-engineer role at a product-led startup building meaningful AI tools.
+CORE SKILLS
+Languages
+Python (expert), TypeScript, SQL, Bash
+Backend
+FastAPI, async SQLAlchemy, Celery, asyncio, REST APIs, Server-Sent Events
+AI / LLM
+LangChain, LangGraph, OpenAI, Anthropic, RAG pipelines, agent orchestration, function calling, prompt engineering, LLM cost optimization
+Data
+PostgreSQL (pgvector, query optimization), Redis, Qdrant, MongoDB, vector search
+Frontend
+React, TypeScript, Tailwind, Zustand (working proficiency, not my primary focus)
+DevOps
+Docker, GitHub Actions, AWS (ECS, Lambda, S3), Render, Sentry, Grafana, PostHog
+EXPERIENCE
+Senior Backend Engineer (AI)  •  Kindred Labs	Mar 2024 – Present
+AI-powered sales assistant for B2B SaaS companies. Series A startup, 35 employees.
+	•	Architected and shipped the core outreach agent: a LangGraph-based multi-step workflow that researches prospects, drafts personalized emails, and schedules follow-ups. Running in production for 400+ companies.
+	•	Designed a two-stage retrieval system (pgvector for shortlist, GPT-4 for reasoning) that reduced LLM cost per matched lead from $0.42 to $0.06, a 7x reduction, with no measurable drop in match quality.
+	•	Led migration of the backend from Django (sync) to FastAPI (async) over 6 weeks. Cut p95 latency on core endpoints from 2.1s to 380ms and unlocked real-time streaming for agent outputs.
+	•	Built the agent observability layer: every LLM call is traced with input, output, token count, latency, and cost attribution. Made it possible for PMs to self-serve on 'why did the agent do X' questions.
+	•	Introduced cost budgeting: per-workspace daily LLM budgets enforced via Redis token buckets, with graceful degradation to smaller models when limits approach. Saved roughly $18k/month at current scale.
+	•	Mentor 2 junior engineers, drive code reviews, own our Sentry error triage rotation.
+Backend Engineer  •  Freshworks	Jul 2022 – Feb 2024
+Customer engagement SaaS. Worked on the Freshdesk ticketing platform.
+	•	Built the async ticket-routing service in Python: consumed Kafka events, applied routing rules, wrote to PostgreSQL. Handled ~12,000 tickets per minute at peak with p99 under 100ms.
+	•	Shipped 'smart reply suggestions', the team's first LLM feature, using OpenAI with a custom prompt pipeline. Achieved 34% suggestion-acceptance rate in A/B testing against a rule-based baseline.
+	•	Optimized a slow PostgreSQL aggregation query on the analytics dashboard, reducing it from 18s to 240ms by restructuring the schema and adding composite indexes. Documented the process in an internal post-mortem.
+	•	Wrote the internal design doc for adopting pgvector across the platform for semantic search on tickets and knowledge-base articles.
+Software Engineer  •  Acme Commerce (early-stage startup)	Aug 2020 – Jun 2022
+E-commerce infrastructure startup. 12-person team. Acquired by a larger SaaS company in 2022.
+	•	Joined as the 3rd engineer. Built the order-management backend in FastAPI + PostgreSQL, shipped the founding customer's MVP in 11 weeks.
+	•	Owned the React-based admin dashboard end to end. Not my favorite work, but learned to ship clean UI when the team needed a full-stack engineer.
+	•	Introduced Docker and CI/CD to the team. Went from manual deploys to automated deploys with rollback in 2 sprints.
+	•	Debugged and resolved a silent Celery task-duplication bug that was occasionally double-charging customers. Root cause: retry logic interacting badly with a manual retry endpoint.
+SIDE PROJECTS
+Jobsense (open source)  •  Personal project	2024 – Present
+	•	A cost-aware job search agent that crawls company career pages, embeds JDs into pgvector, and uses Claude 3.5 Sonnet for reasoning on the shortlist. ~600 stars on GitHub, used by a small community of job seekers.
+	•	Blog post on the architecture (two-stage retrieval + streaming reasoning) got picked up by a few AI newsletters.
+PaperDigest  •  Personal project	2023
+	•	A small CLI tool that summarizes ML papers using structured prompts and caches results in SQLite. Built it in a weekend because existing tools were too expensive for my usage.
+EDUCATION
+B.Tech, Computer Science  •  Indian Institute of Technology (IIT) Guwahati	2016 – 2020
+	•	GPA 8.4/10. Relevant coursework: Distributed Systems, ML, Database Systems, OS.
+	•	Final-year project: distributed task-scheduling simulator. Got a B.
+WHAT I'M LOOKING FOR
+	•	Senior IC or founding-engineer role. Not looking to manage people yet.
+	•	Product-led startup building something I'd personally want to use.
+	•	AI systems, agent infrastructure, or backend-heavy platforms. Not interested in pure research or pure ML-Ops.
+	•	Open to hybrid or remote. Based in Bengaluru, happy to travel for offsites and team weeks.
