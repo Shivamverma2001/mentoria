@@ -242,43 +242,38 @@ Stop yourself if you drift here — time is better spent on architecture + strea
 
 ---
 
-## Phase 11 — README (Most Important Deliverable)
+## Phase 11 — README (Most Important Deliverable) ✅
 
-- [ ] **Setup instructions** — teammate can run locally without guessing (clone → env → compose up → open UI)
-- [ ] **Architecture** — design doc style (single most important section):
-  - [ ] End-to-end flow diagram or prose (ingest → embed → shortlist → LLM → stream)
-  - [ ] Why two-stage retrieval vs full LLM on 25 jobs
-  - [ ] LLM provider choice and tradeoffs
-  - [ ] LangChain/LangGraph: used or skipped, and why
-  - [ ] pgvector vs in-memory (if applicable)
-  - [ ] Streaming design (SSE/WebSocket) and why not blocking
-  - [ ] Redis caching strategy
-  - [ ] Ambiguity decisions (scoring scale, location weighting, PDF parsing, salary field handling, etc.)
-- [ ] **If I had one more week** — concrete next steps
-- [ ] **Known issues & limitations** — honest list of what you skipped or chose not to fix
-- [ ] Link to walkthrough video
+- [x] **Setup instructions** — fresh-clone block: clone → `.env` → `docker compose up` → localhost:3000
+- [x] **Architecture** — design doc in README (diagram, two-stage, LLM, LangChain/LangGraph, pgvector, SSE, Redis, ambiguities)
+- [x] **If I had one more week** — 7 prioritized concrete items
+- [x] **Known issues & limitations** — honest table (LLM latency, no deploy, PDF, fallback matches, etc.)
+- [x] Review log: `docs/PHASE11_REVIEW.md`
+- [ ] Link to walkthrough video — **Phase 12** (placeholder in README)
 
 ---
 
 ## Phase 12 — Video Walkthrough (5–8 min max)
 
-- [ ] Record Loom or Google Drive video
-- [ ] **Live demo** of the feature in action (paste or upload resume → stream results)
-- [ ] Explain **architecture choices and why** you made them
-- [ ] Show **one thing in your code you are proud of**
-- [ ] Show **one thing you would rewrite** and why
-- [ ] Keep total length between 5 and 8 minutes
+- [x] Script with timestamps: `docs/PHASE12_VIDEO_SCRIPT.md`
+- [x] Proud code pick: `backend/app/services/matcher.py` (`stream_job_match`)
+- [x] Rewrite pick: `backend/app/services/llm_ranker.py` (fallback padding)
+- [ ] **Record** Loom or Google Drive video (follow script)
+- [ ] **Live demo** in recording (Load sample → Match jobs → 5 cards stream)
+- [ ] Paste video link in README + submission email
 
 ---
 
 ## Phase 13 — Final Submission
 
-- [ ] Push all code to GitHub
-- [ ] README complete and accurate (re-run fresh-clone test after last push)
-- [ ] Share repo link (public) or grant access to reviewer email
-- [ ] Share video link in README or submission message
-- [ ] Final security pass: no API keys or `.env` committed; `.env.example` is complete
-- [ ] Submission bundle complete: **repo + README + video**
+- [x] Push code to GitHub (`origin/main`)
+- [x] README complete (setup, architecture, submission section)
+- [x] Repo link public: https://github.com/Shivamverma2001/mentoria
+- [x] Security pass: `.env` gitignored, no keys in repo (`docs/SUBMISSION.md`)
+- [x] Submission guide + email template: `docs/SUBMISSION.md`
+- [ ] Paste **video link** in README (after Phase 12 recording)
+- [ ] **Fresh-clone live test** with Docker + `OPENAI_API_KEY` (manual)
+- [ ] Send submission email to reviewer
 
 ---
 
