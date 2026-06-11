@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     sentry_traces_sample_rate: float = 0.2
 
     backend_cors_origins: str = "http://localhost:5173,http://localhost:3000"
+    backend_cors_origin_regex: str = r"https://.*\.onrender\.com"
     shortlist_size: int = 12
     match_cache_ttl_seconds: int = 3600
     resume_embedding_cache_ttl_seconds: int = 86400
@@ -37,6 +38,11 @@ class Settings(BaseSettings):
     @property
     def cors_origins(self) -> list[str]:
         return [origin.strip() for origin in self.backend_cors_origins.split(",") if origin.strip()]
+
+    @property
+    def cors_origin_regex(self) -> str | None:
+        pattern = self.backend_cors_origin_regex.strip()
+        return pattern or None
 
     @property
     def uses_gemini(self) -> bool:

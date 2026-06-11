@@ -68,7 +68,7 @@ Set either:
 | `mentoria-api` | `DATABASE_URL` | Neon async URL |
 | `mentoria-api` | `REDIS_URL` | Upstash URL |
 | `mentoria-api` | `GEMINI_API_KEY` | Your key |
-| `mentoria-api` | `BACKEND_CORS_ORIGINS` | `https://mentoria-ui.onrender.com` (your UI URL) |
+| `mentoria-api` | `BACKEND_CORS_ORIGINS` | Auto from blueprint (`RENDER_EXTERNAL_URL` of UI) or `https://mentoria-ui.onrender.com` |
 
 6. Deploy. First API request may be slow (cold start on free tier).
 

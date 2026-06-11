@@ -34,7 +34,10 @@ services:
       - key: LOG_LEVEL
         value: INFO
       - key: BACKEND_CORS_ORIGINS
-        sync: false
+        fromService:
+          type: web
+          name: mentoria-ui
+          envVarKey: RENDER_EXTERNAL_URL
 
   - type: web
     name: mentoria-ui
