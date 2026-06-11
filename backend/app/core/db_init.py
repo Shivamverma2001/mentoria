@@ -1,14 +1,33 @@
+import logging
+
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import Base, engine
 from app.services.seed import count_jobs, seed_jobs
 
+logger = logging.getLogger(__name__)
+
+
+async def _ensure_vector_index(conn) -> None:
+    try:
+        await conn.execute(
+            text(
+                """
+                CREATE INDEX IF NOT EXISTS jobs_embedding_hnsw_idx
+                ON jobs USING hnsw (embedding vector_cosine_ops)
+                """
+            )
+        )
+    except Exception as exc:
+        logger.warning("HNSW index creation skipped (will retry after embeddings): %s", exc)
+
 
 async def init_database(session: AsyncSession) -> int:
     async with engine.begin() as conn:
         await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
         await conn.run_sync(Base.metadata.create_all)
+        await _ensure_vector_index(conn)
 
     job_count = await count_jobs(session)
     if job_count == 0:

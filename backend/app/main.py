@@ -7,10 +7,12 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 
 from app.api.jobs import router as jobs_router
+from app.api.match import router as match_router
 from app.api.resume import router as resume_router
 from app.core.config import settings
 from app.core.database import async_session_factory, engine
 from app.core.db_init import init_database
+from app.services.llm_ranker import MatchRankingError
 from app.services.resume_errors import ResumeEmbeddingError, ResumeParseError
 from app.services.seed import count_jobs
 
@@ -54,6 +56,14 @@ async def resume_embedding_error_handler(_request: Request, exc: ResumeEmbedding
     )
 
 
+@app.exception_handler(MatchRankingError)
+async def match_ranking_error_handler(_request: Request, exc: MatchRankingError) -> JSONResponse:
+    return JSONResponse(
+        status_code=502,
+        content={"detail": exc.message, "code": exc.code},
+    )
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
@@ -64,6 +74,7 @@ app.add_middleware(
 
 app.include_router(jobs_router)
 app.include_router(resume_router)
+app.include_router(match_router)
 
 
 @app.get("/api/health")

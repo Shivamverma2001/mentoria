@@ -2,7 +2,7 @@
 
 Mentoria take-home assignment: match a candidate resume against job descriptions and stream the top 5 results with personalized reasoning.
 
-> **Status:** Phase 0–3 complete (through resume ingestion). Matching pipeline and UI wiring in progress.
+> **Status:** Phase 0–4 complete (matching pipeline with SSE). Redis, Sentry, UI, and Docker polish in progress.
 
 ## Quick start
 
@@ -26,6 +26,7 @@ cd frontend && npm install && npm run dev
 # Verify
 make verify-phase2
 make verify-phase3
+make verify-phase4
 ```
 
 - Frontend: http://localhost:5173
@@ -34,6 +35,7 @@ make verify-phase3
 - Job count: http://localhost:8000/api/jobs/count
 - Resume ingest (paste JSON): `POST /api/resume/ingest/json` with `{"resume_text":"...", "embed": false}`
 - Resume ingest (form): `POST /api/resume/ingest` with `resume_text` or `resume_file` (PDF)
+- **Job match (SSE):** `POST /api/match/stream/json` with `{"resume_text":"..."}` — streams top 5 matches
 
 ## Project layout
 

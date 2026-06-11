@@ -121,36 +121,34 @@ Stop yourself if you drift here — time is better spent on architecture + strea
 
 ---
 
-## Phase 4 — Matching Pipeline (Core Logic)
+## Phase 4 — Matching Pipeline (Core Logic) ✅
 
 ### 4a — Vector retrieval (stage 1)
 
-- [ ] Choose embedding model (e.g. `text-embedding-3-small` or provider equivalent)
-- [ ] Build job text for embedding: title + skills + description (consistent format)
-- [ ] Embed all jobs (on seed or lazy on first run) and store in pgvector
-- [ ] Implement similarity search: resume embedding vs job embeddings
-- [ ] Shortlist top N candidates (e.g. 10–15) before LLM — document N in README
+- [x] Embedding model: OpenAI `text-embedding-3-small` (1536 dims)
+- [x] Job embedding text: title + skills + description (`Job.embedding_text()`)
+- [x] Batch embed jobs on first match (`ensure_job_embeddings`)
+- [x] pgvector cosine similarity shortlist (`vector_search.py`)
+- [x] Shortlist top **12** (`SHORTLIST_SIZE` in `.env`)
 
 ### 4b — LLM ranking & explanation (stage 2)
 
-- [ ] Implement with LangChain/LangGraph **or** direct SDK calls — document choice in README
-- [ ] Prompt LLM with full resume text + shortlisted job details
-- [ ] Return exactly **top 5** ranked jobs (best fit first, worst of the five last)
-- [ ] For each match, enforce:
-  - [ ] `match_score` (define scale, e.g. 0–100)
-  - [ ] `reasoning` — 2–3 lines, **personalized** to this candidate (not generic JD summary)
-  - [ ] `highlight_bullet` — one **actual** resume bullet to feature in a cover letter
-- [ ] Handle LLM failures gracefully (retry once or fallback message)
-- [ ] Ensure output is structured (JSON mode / Pydantic parsing)
-- [ ] Validate reasoning length and that highlight bullet appears in resume text (or close paraphrase)
+- [x] LangChain `ChatOpenAI.with_structured_output` — LangGraph skipped
+- [x] Prompt with full resume + shortlisted jobs JSON
+- [x] Exactly **top 5**, ranked best → worst
+- [x] Per match: `match_score` (0–100), `reasoning`, `highlight_bullet`
+- [x] LLM retry once; fallback padding if < 5 results
+- [x] Pydantic `RankingResponse` structured output
+- [x] Validate reasoning + highlight grounding (`match_validation.py`)
+- [x] `make verify-phase4`
 
 ### 4c — Streaming (required — assignment rejects 30s blocking)
 
-- [ ] Expose **streaming endpoint** (SSE or WebSocket) — do **not** rely on a single long `POST` that waits for all 5
-- [ ] Stream each of the 5 results as they are ready (e.g. one job card at a time)
-- [ ] Send progress events: `started`, `retrieving`, `ranking`, `job_match`, `complete`
-- [ ] Frontend shows progressive updates while stream is open
-- [ ] Confirm perceived wait is incremental, not one frozen screen until the end
+- [x] `POST /api/match/stream` + `/stream/json` — SSE `text/event-stream`
+- [x] Stream 5 `match` events sequentially (50ms stagger for UX)
+- [x] Progress `status` events: parsing, embedding, retrieving, ranking
+- [x] `done` event with `duration_ms`
+- [ ] Frontend progressive updates — **Phase 8**
 
 ---
 
