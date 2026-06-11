@@ -17,6 +17,7 @@ class Settings(BaseSettings):
 
     sentry_dsn: str = ""
     sentry_environment: str = "development"
+    sentry_traces_sample_rate: float = 0.2
 
     backend_cors_origins: str = "http://localhost:5173,http://localhost:3000"
     shortlist_size: int = 12

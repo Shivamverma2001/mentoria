@@ -1,4 +1,8 @@
+from dataclasses import dataclass
+
 from pydantic import BaseModel, Field
+
+from app.schemas.match import JobMatch
 
 
 class RankingItem(BaseModel):
@@ -10,3 +14,9 @@ class RankingItem(BaseModel):
 
 class RankingResponse(BaseModel):
     matches: list[RankingItem] = Field(min_length=1, max_length=5)
+
+
+@dataclass
+class RankingOutcome:
+    matches: list[JobMatch]
+    llm_total_tokens: int | None = None

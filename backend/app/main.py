@@ -13,11 +13,15 @@ from app.core.config import settings
 from app.core.database import async_session_factory, engine
 from app.core.db_init import init_database
 from app.core.redis import close_redis, init_redis, ping_redis, redis_available
+from app.core.sentry import init_sentry, sentry_enabled
 from app.services.llm_ranker import MatchRankingError
 from app.services.resume_errors import ResumeEmbeddingError, ResumeParseError
 from app.services.seed import count_jobs
 
 logger = logging.getLogger(__name__)
+
+# Initialize Sentry before FastAPI app construction
+init_sentry()
 
 
 @asynccontextmanager
@@ -90,6 +94,7 @@ async def health() -> dict:
         "status": "ok",
         "redis": redis_status["status"],
         "cache_enabled": redis_available(),
+        "sentry": "enabled" if sentry_enabled() else "disabled",
     }
 
     try:

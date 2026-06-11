@@ -8,7 +8,7 @@ from openai import APIError, OpenAIError
 from app.core.config import settings
 from app.models.job import Job
 from app.schemas.match import JobMatch
-from app.schemas.ranking import RankingResponse
+from app.schemas.ranking import RankingOutcome, RankingResponse
 from app.services.match_validation import finalize_match, pick_best_resume_bullet
 from app.services.resume_ingest import ParsedResume
 
@@ -72,27 +72,52 @@ def _structured_llm() -> ChatOpenAI:
     )
 
 
-async def rank_jobs_with_llm(parsed: ParsedResume, shortlist: list[Job]) -> list[JobMatch]:
+def _extract_llm_tokens(raw_message: object | None) -> int | None:
+    if raw_message is None:
+        return None
+
+    usage_metadata = getattr(raw_message, "usage_metadata", None)
+    if isinstance(usage_metadata, dict) and usage_metadata.get("total_tokens") is not None:
+        return int(usage_metadata["total_tokens"])
+
+    response_metadata = getattr(raw_message, "response_metadata", None) or {}
+    token_usage = response_metadata.get("token_usage") or {}
+    total = token_usage.get("total_tokens")
+    return int(total) if total is not None else None
+
+
+async def rank_jobs_with_llm(parsed: ParsedResume, shortlist: list[Job]) -> RankingOutcome:
     if len(shortlist) < 5:
         raise MatchRankingError(
             f"Need at least 5 jobs with embeddings for matching, found {len(shortlist)}.",
             "insufficient_jobs",
         )
 
-    llm = _structured_llm().with_structured_output(RankingResponse)
+    llm = _structured_llm().with_structured_output(RankingResponse, include_raw=True)
     chain = RANKING_PROMPT | llm
 
     last_error: Exception | None = None
     for attempt in range(2):
         try:
-            response: RankingResponse = await chain.ainvoke(
+            result = await chain.ainvoke(
                 {
                     "resume_text": parsed.raw_text[:10_000],
                     "signals_json": parsed.signals.model_dump_json(),
                     "jobs_json": _jobs_payload(shortlist),
                 }
             )
-            return _build_matches(response, shortlist, parsed.raw_text)
+            if isinstance(result, dict):
+                response = result["parsed"]
+                raw_message = result.get("raw")
+            else:
+                response = result
+                raw_message = None
+
+            matches = _build_matches(response, shortlist, parsed.raw_text)
+            return RankingOutcome(
+                matches=matches,
+                llm_total_tokens=_extract_llm_tokens(raw_message),
+            )
         except (OpenAIError, APIError, MatchRankingError, ValueError) as exc:
             last_error = exc
             logger.warning("LLM ranking attempt %s failed: %s", attempt + 1, exc)

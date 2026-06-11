@@ -167,14 +167,18 @@ Stop yourself if you drift here — time is better spent on architecture + strea
 
 ---
 
-## Phase 6 — Observability (Sentry)
+## Phase 6 — Observability (Sentry) ✅
 
-- [ ] Create free-tier Sentry project
-- [ ] Integrate Sentry in FastAPI backend
-- [ ] Capture at least **one meaningful custom event or transaction**, e.g.:
-  - `job_match_completed` with `{duration_ms, shortlist_size, llm_tokens, top_score}`
-- [ ] Verify event appears in Sentry during a test match
-- [ ] (Optional) Add Sentry to React for frontend errors
+- [ ] Create free-tier Sentry project — **user action** (see README / `docs/PHASE6_REVIEW.md`)
+- [x] Integrate Sentry in FastAPI backend (`app/core/sentry.py`, init before app)
+- [x] Custom event `job_match_completed` with:
+  - [x] `duration_ms`, `shortlist_size`, `llm_total_tokens`, `top_score`
+  - [x] `cache_hit`, `jobs_embedded`, `top_job_id`, `match_count`
+- [x] Custom event `job_match_failed` on stream errors
+- [x] `/api/health` reports `sentry: enabled|disabled`
+- [x] `make verify-phase6`
+- [ ] Verify event in Sentry UI — requires `SENTRY_DSN` in `.env` + live match
+- [ ] (Optional) React Sentry — skipped
 
 ---
 

@@ -2,7 +2,7 @@
 
 Mentoria take-home assignment: match a candidate resume against job descriptions and stream the top 5 results with personalized reasoning.
 
-> **Status:** Phase 0–5 complete (matching + Redis caching). Sentry, UI, and full Docker compose in progress.
+> **Status:** Phase 0–6 complete (matching, Redis, Sentry). Frontend UI and full Docker compose in progress.
 
 ## Quick start
 
@@ -28,7 +28,14 @@ make verify-phase2
 make verify-phase3
 make verify-phase4
 make verify-phase5
+make verify-phase6
 ```
+
+## Observability (Sentry)
+
+1. Create a free project at [sentry.io](https://sentry.io) and copy the DSN into `.env` as `SENTRY_DSN`.
+2. On each successful match, the backend emits a **`job_match_completed`** event with `duration_ms`, `shortlist_size`, `llm_total_tokens`, `top_score`, and `cache_hit`.
+3. Check `/api/health` — `"sentry": "enabled"` when DSN is configured.
 
 ## Caching (Redis)
 

@@ -12,6 +12,7 @@ from app.services.embeddings import embed_text
 from app.services.job_embeddings import ensure_job_embeddings
 from app.services.llm_ranker import MatchRankingError, rank_jobs_with_llm
 from app.services.match_cache import get_cached_matches, set_cached_matches
+from app.services.observability import JobMatchMetrics, capture_job_match_completed, capture_job_match_failed
 from app.services.resume_ingest import ParsedResume, ingest_resume
 from app.services.vector_search import search_similar_jobs
 
@@ -28,6 +29,33 @@ def _sse(event: str, data: dict) -> str:
     return f"event: {event}\ndata: {json.dumps(data)}\n\n"
 
 
+def _top_score(matches: list[JobMatch]) -> int | None:
+    return max((match.match_score for match in matches), default=None)
+
+
+def _record_success(
+    *,
+    matches: list[JobMatch],
+    started: float,
+    shortlist_size: int,
+    cache_hit: bool,
+    jobs_embedded: int = 0,
+    llm_total_tokens: int | None = None,
+) -> None:
+    capture_job_match_completed(
+        JobMatchMetrics(
+            duration_ms=int((time.perf_counter() - started) * 1000),
+            match_count=len(matches),
+            shortlist_size=shortlist_size,
+            top_score=_top_score(matches),
+            cache_hit=cache_hit,
+            jobs_embedded=jobs_embedded,
+            llm_total_tokens=llm_total_tokens,
+            top_job_id=matches[0].job_id if matches else None,
+        )
+    )
+
+
 async def _emit_cached_stream(
     matches: list[JobMatch],
     started: float,
@@ -41,6 +69,12 @@ async def _emit_cached_stream(
         await asyncio.sleep(0.05)
 
     duration_ms = int((time.perf_counter() - started) * 1000)
+    _record_success(
+        matches=matches,
+        started=started,
+        shortlist_size=len(matches),
+        cache_hit=True,
+    )
     yield _sse(
         "done",
         DoneEvent(total=len(matches), duration_ms=duration_ms, cache_hit=True).model_dump(),
@@ -85,7 +119,8 @@ async def stream_job_match(
             raise MatchRankingError("No jobs with embeddings available for matching.", "no_jobs")
 
         yield _sse("status", StatusEvent(stage="ranking").model_dump())
-        matches: list[JobMatch] = await rank_jobs_with_llm(parsed, shortlist)
+        ranking = await rank_jobs_with_llm(parsed, shortlist)
+        matches = ranking.matches
         await set_cached_matches(parsed.raw_text, matches)
 
         for match in matches:
@@ -93,6 +128,14 @@ async def stream_job_match(
             await asyncio.sleep(0.05)
 
         duration_ms = int((time.perf_counter() - started) * 1000)
+        _record_success(
+            matches=matches,
+            started=started,
+            shortlist_size=len(shortlist),
+            cache_hit=False,
+            jobs_embedded=embedded,
+            llm_total_tokens=ranking.llm_total_tokens,
+        )
         yield _sse(
             "done",
             DoneEvent(total=len(matches), duration_ms=duration_ms, cache_hit=False).model_dump(),
@@ -108,4 +151,5 @@ async def stream_job_match(
         logger.exception("Match stream failed")
         code = getattr(exc, "code", "match_failed")
         message = getattr(exc, "message", str(exc))
+        capture_job_match_failed(code=code, message=message)
         yield _sse("error", ErrorEvent(message=f"{message} (code={code})").model_dump())

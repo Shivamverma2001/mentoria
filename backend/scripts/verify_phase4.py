@@ -11,7 +11,7 @@ BACKEND_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BACKEND_ROOT))
 
 from app.schemas.match import JobMatch  # noqa: E402
-from app.schemas.ranking import RankingItem, RankingResponse  # noqa: E402
+from app.schemas.ranking import RankingItem, RankingOutcome, RankingResponse  # noqa: E402
 from app.services.llm_ranker import _build_matches  # noqa: E402
 from app.services.match_validation import (  # noqa: E402
     finalize_match,
@@ -146,7 +146,10 @@ async def verify_sse_stream() -> None:
         patch("app.services.matcher.embed_text", AsyncMock(return_value=[0.1] * 1536)),
         patch("app.services.matcher.ensure_job_embeddings", AsyncMock(return_value=25)),
         patch("app.services.matcher.search_similar_jobs", AsyncMock(return_value=shortlist)),
-        patch("app.services.matcher.rank_jobs_with_llm", AsyncMock(return_value=mock_matches)),
+        patch(
+            "app.services.matcher.rank_jobs_with_llm",
+            AsyncMock(return_value=RankingOutcome(matches=mock_matches, llm_total_tokens=420)),
+        ),
         patch("app.services.matcher.set_cached_matches", AsyncMock(return_value=True)),
     ):
         async for chunk in stream_job_match(session, resume_text=resume):
@@ -195,7 +198,10 @@ def verify_api_stream_endpoint() -> None:
         patch("app.services.matcher.embed_text", AsyncMock(return_value=[0.0] * 1536)),
         patch("app.services.matcher.ensure_job_embeddings", AsyncMock(return_value=0)),
         patch("app.services.matcher.search_similar_jobs", AsyncMock(return_value=shortlist)),
-        patch("app.services.matcher.rank_jobs_with_llm", AsyncMock(return_value=mock_matches)),
+        patch(
+            "app.services.matcher.rank_jobs_with_llm",
+            AsyncMock(return_value=RankingOutcome(matches=mock_matches, llm_total_tokens=420)),
+        ),
         patch("app.services.matcher.set_cached_matches", AsyncMock(return_value=True)),
     ):
         response = client.post("/api/match/stream/json", json={"resume_text": resume})
